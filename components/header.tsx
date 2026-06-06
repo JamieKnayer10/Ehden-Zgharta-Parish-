@@ -146,14 +146,17 @@ export function Header() {
       <div
         className={cn(
           "lg:hidden overflow-hidden transition-all duration-300 ease-in-out",
-          mobileMenuOpen ? "max-h-[calc(100vh-4.5rem)] border-t" : "max-h-0"
+          mobileMenuOpen ? "max-h-[calc(100dvh-4.5rem)] border-t" : "max-h-0"
         )}
       >
-        <div className="space-y-1 px-4 py-4 max-h-[calc(100vh-4.5rem)] overflow-y-auto overscroll-contain">
+        <div className="space-y-1 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain">
           {navigation.map((item) => (
             item.children ? (
               <div key={item.name} className="py-2">
-                <p className="px-3 text-sm font-semibold text-foreground">{item.name}</p>
+                <p className="flex items-center gap-3 px-3 py-1 text-base font-medium text-foreground">
+                  <item.icon className="h-5 w-5 text-muted-foreground" />
+                  {item.name}
+                </p>
                 <div className="mt-2 space-y-1 pl-4">
                   {item.children.map((child) => (
                     <Link

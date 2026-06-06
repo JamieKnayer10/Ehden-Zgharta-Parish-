@@ -400,7 +400,7 @@ export default function PhotoGalleryPage() {
 
         {/* Lightbox Dialog */}
         <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto border-0 bg-[#0d1b3e] p-0">
+          <DialogContent className="w-[calc(100vw-1.5rem)] max-w-6xl max-h-[90dvh] overflow-y-auto border-0 bg-[#0d1b3e] p-0">
             <DialogTitle className="sr-only">
               {selectedPhoto?.title || "Photo"}
             </DialogTitle>
@@ -410,7 +410,7 @@ export default function PhotoGalleryPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-4 z-50 text-white hover:bg-white/20"
+                  className="absolute right-2 top-2 z-50 text-white hover:bg-white/20"
                   onClick={() => setSelectedPhoto(null)}
                 >
                   <X className="h-6 w-6" />
@@ -422,7 +422,7 @@ export default function PhotoGalleryPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute left-4 top-1/2 z-50 -translate-y-1/2 text-white hover:bg-white/20"
+                      className="absolute left-1 top-1/2 z-50 -translate-y-1/2 text-white hover:bg-white/20"
                       onClick={goToPrevious}
                     >
                       <ChevronLeft className="h-8 w-8" />
@@ -439,7 +439,7 @@ export default function PhotoGalleryPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute right-4 top-1/2 z-50 -translate-y-1/2 text-white hover:bg-white/20"
+                      className="absolute right-1 top-1/2 z-50 -translate-y-1/2 text-white hover:bg-white/20"
                       onClick={goToNext}
                     >
                       <ChevronRight className="h-8 w-8" />
@@ -448,8 +448,8 @@ export default function PhotoGalleryPage() {
                 </div>
 
                 {/* Photo Info */}
-                <div className="border-t border-white/10 bg-[#0a1628] p-6">
-                  <div className="flex items-start justify-between">
+                <div className="border-t border-white/10 bg-[#0a1628] p-4 sm:p-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <h3 className="font-serif text-xl font-semibold text-white">{selectedPhoto.title}</h3>
                       <p className="text-lg text-white/80">{selectedPhoto.titleAr}</p>
