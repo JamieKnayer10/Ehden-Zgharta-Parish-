@@ -223,7 +223,7 @@ export default function PatriarchDouaihyPage() {
             </div>
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-secondary/30 hidden md:block" />
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-secondary/30" />
               
               <div className="space-y-8">
                 {timeline.map((event, index) => (
@@ -231,7 +231,7 @@ export default function PatriarchDouaihyPage() {
                     <div className="shrink-0 w-16 text-right">
                       <span className="font-serif text-xl font-bold text-secondary">{event.year}</span>
                     </div>
-                    <div className="hidden md:block shrink-0 w-4 h-4 mt-1.5 rounded-full bg-secondary ring-4 ring-background relative z-10" />
+                    <div className="shrink-0 w-4 h-4 mt-1.5 rounded-full bg-secondary ring-4 ring-background relative z-10" />
                     <Card className="flex-1 border-none shadow-md">
                       <CardContent className="p-5">
                         <h3 className="font-semibold text-foreground">{event.title}</h3>

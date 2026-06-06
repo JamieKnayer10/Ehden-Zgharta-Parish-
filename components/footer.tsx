@@ -23,8 +23,8 @@ const mediaLinks = [
 
 const socialLinks = [
   { name: "Facebook", href: "https://www.facebook.com/EhdenZghartaParishOfficial", icon: Facebook },
-  { name: "Instagram", href: "#", icon: Instagram },
-  { name: "YouTube", href: "#", icon: Youtube },
+  { name: "Instagram", href: "https://www.instagram.com/ehdenzghartaparish?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", icon: Instagram },
+  // { name: "YouTube", href: "http://www.youtube.com/@ZghartaChannelHD", icon: Youtube },
 ]
 
 export function Footer() {

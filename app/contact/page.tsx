@@ -278,21 +278,23 @@ export default function ContactPage() {
                       <Facebook className="h-5 w-5" />
                     </a>
                     <a 
-                      href="#"
+                      href="https://www.instagram.com/ehdenzghartaparish?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
                     >
                       <Instagram className="h-5 w-5" />
                     </a>
-                    <a 
-                      href="#"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
-                    >
-                      <Youtube className="h-5 w-5" />
-                    </a>
+                   {/*
+<a 
+  href="#"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="p-3 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
+>
+  <Youtube className="h-5 w-5" />
+</a>
+*/}
                   </div>
                 </div>
 
