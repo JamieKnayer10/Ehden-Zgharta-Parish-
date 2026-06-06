@@ -123,9 +123,14 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 shrink-0 mt-0.5" />
-                <span className="text-sm text-primary-foreground/80">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Ehden-Zgharta%2C+North+Lebanon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-foreground/80 hover:text-primary-foreground"
+                >
                   Ehden-Zgharta, North Lebanon
-                </span>
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 shrink-0" />
