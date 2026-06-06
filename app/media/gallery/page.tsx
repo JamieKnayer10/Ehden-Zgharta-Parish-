@@ -400,7 +400,7 @@ export default function PhotoGalleryPage() {
 
         {/* Lightbox Dialog */}
         <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-          <DialogContent className="max-w-6xl border-0 bg-[#0d1b3e] p-0">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto border-0 bg-[#0d1b3e] p-0">
             <DialogTitle className="sr-only">
               {selectedPhoto?.title || "Photo"}
             </DialogTitle>
@@ -417,7 +417,7 @@ export default function PhotoGalleryPage() {
                 </Button>
 
                 {/* Image */}
-                <div className="relative flex min-h-[70vh] items-center justify-center p-8">
+                <div className="relative flex min-h-[40vh] items-center justify-center p-4 sm:p-8">
                   {currentIndex > 0 && (
                     <Button
                       variant="ghost"
@@ -433,7 +433,7 @@ export default function PhotoGalleryPage() {
                     alt={selectedPhoto.title}
                     width={1200}
                     height={800}
-                    className="max-h-[70vh] w-auto rounded-lg object-contain"
+                    className="max-h-[60vh] w-auto rounded-lg object-contain"
                   />
                   {currentIndex < filteredPhotos.length - 1 && (
                     <Button
