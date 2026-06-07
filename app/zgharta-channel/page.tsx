@@ -213,7 +213,7 @@ export default function ZghartaChannelPage() {
                       <p className={`text-sm font-medium flex-1 ${index === 5 ? "text-white" : "text-slate-300"}`}>
                         {item.program}
                       </p>
-                      <p className="text-xs text-slate-500 flex-1 text-right" dir="rtl">{item.programAr}</p>
+                      <p className="text-xs text-slate-500 flex-1 text-center" dir="rtl">{item.programAr}</p>
                       <div className="w-12 shrink-0 flex justify-end">
                         {index === 5 && (
                           <Badge className="bg-red-600 text-white text-xs">NOW</Badge>
