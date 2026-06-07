@@ -263,7 +263,7 @@ export default function RadioEhdenPage() {
                           <p className={`font-medium flex-1 ${item.isLive ? "text-white" : "text-sky-200"}`}>
                             {item.program}
                           </p>
-                          <p className="text-sm text-sky-500 flex-1 text-right" dir="rtl">{item.programAr}</p>
+                          <p className="text-sm text-sky-500 flex-1 text-left" dir="rtl">{item.programAr}</p>
                           <div className="w-14 shrink-0 flex justify-end">
                             {item.isLive && (
                               <Badge className="bg-green-500 text-white">LIVE</Badge>
