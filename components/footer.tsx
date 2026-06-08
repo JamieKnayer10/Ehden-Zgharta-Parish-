@@ -11,6 +11,7 @@ const quickLinks = [
   { name: "News", href: "/news" },
   { name: "Churches", href: "/churches" },
   { name: "Services", href: "/services" },
+  { name: "Media", href: "/media" },
   { name: "Contact", href: "/contact" },
 ]
 
