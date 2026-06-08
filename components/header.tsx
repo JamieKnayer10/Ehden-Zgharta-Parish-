@@ -153,10 +153,14 @@ export function Header() {
           {navigation.map((item) => (
             item.children ? (
               <div key={item.name} className="py-2">
-                <p className="flex items-center gap-3 px-3 py-1 text-base font-medium text-foreground">
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-3 px-3 py-2 text-base font-medium text-foreground hover:bg-muted rounded-md"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   <item.icon className="h-5 w-5 text-muted-foreground" />
                   {item.name}
-                </p>
+                </Link>
                 <div className="mt-2 space-y-1 pl-4">
                   {item.children.map((child) => (
                     <Link
