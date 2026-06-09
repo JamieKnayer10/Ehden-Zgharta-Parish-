@@ -102,7 +102,7 @@ export function Header() {
               >
                 <Link
                   href={item.href}
-                  className="rounded-md py-2 pl-3 pr-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-accent-foreground"
+                  className="rounded-md py-2 pl-3 pr-0.5 text-sm font-medium text-foreground/80 transition-colors group-hover:text-accent-foreground"
                 >
                   {item.name}
                 </Link>
@@ -111,7 +111,7 @@ export function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 pr-1 hover:bg-transparent group-hover:text-accent-foreground"
+                      className="h-8 w-5 pr-2 hover:bg-transparent group-hover:text-accent-foreground"
                       aria-label={`${item.name} menu`}
                     >
                       <ChevronDown className="h-4 w-4" />
