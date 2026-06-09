@@ -295,7 +295,7 @@ export default function PhotoGalleryPage() {
             <nav className="flex items-center gap-2 text-sm text-muted-foreground">
               <Link href="/" className="hover:text-primary">Home</Link>
               <ChevronRight className="h-4 w-4" />
-              <Link href="/media/gallery" className="hover:text-primary">Media</Link>
+              <Link href="/media" className="hover:text-primary">Media</Link>
               <ChevronRight className="h-4 w-4" />
               <span className="text-foreground">Photo Gallery</span>
             </nav>

@@ -1,10 +1,14 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Camera, Video, Tv, Radio } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ArrowRight, ArrowLeft, Camera, Video, Tv, Radio } from "lucide-react"
 
 const mediaSections = [
   {
@@ -54,6 +58,8 @@ const mediaSections = [
 ]
 
 export default function MediaPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -75,6 +81,16 @@ export default function MediaPage() {
               Discover photos, videos, broadcasts, and radio from the Maronite Parish of Ehden and
               Zgharta.
             </p>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
           </div>
         </section>
 
