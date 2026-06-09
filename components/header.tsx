@@ -63,8 +63,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8" aria-label="Global">
-        {/* Logo - moved more to the left */}
-        <div className="flex lg:flex-1 -ml-2 lg:-ml-4">
+        {/* Logo - */}
+        <div className="flex lg:flex-1 -ml-2 lg:-ml-8">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-3">
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/parish%20logo%202-GQnfE9BeZQCviAkTifBUZIW21fgdDk.jpg"
@@ -93,7 +93,7 @@ export function Header() {
         </div>
 
         {/* Desktop navigation */}
-        <div className="hidden lg:flex lg:gap-x-1">
+        <div className="hidden lg:flex lg:gap-x-3">
           {navigation.map((item) => (
             item.children ? (
               <div
@@ -140,8 +140,8 @@ export function Header() {
           ))}
         </div>
 
-        {/* Desktop CTA buttons - removed LIVE indicator */}
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-2">
+        {/* Desktop CTA buttons */}
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-2 ml-6">
           <Button variant="outline" size="sm" asChild>
             <Link href="/radio-ehden" className="flex items-center gap-2">
               <Radio className="h-4 w-4" />
