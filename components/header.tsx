@@ -99,7 +99,7 @@ export function Header() {
               <div key={item.name} className="flex items-center">
                 <Link
                   href={item.href}
-                  className="px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                   {item.name}
                 </Link>
@@ -129,7 +129,7 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 {item.name}
               </Link>
