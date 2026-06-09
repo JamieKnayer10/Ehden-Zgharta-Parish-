@@ -96,14 +96,28 @@ export function Header() {
         <div className="hidden lg:flex lg:gap-x-1">
           {navigation.map((item) => (
             item.children ? (
-              <DropdownMenu key={item.name}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium">
-                    {item.name}
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="w-48">
+              <div
+                key={item.name}
+                className="group flex items-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                <Link
+                  href={item.href}
+                  className="rounded-md py-2 pl-3 pr-0.5 text-sm font-medium text-foreground/80 transition-colors group-hover:text-accent-foreground"
+                >
+                  {item.name}
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-5 pr-2 hover:bg-transparent group-hover:text-accent-foreground"
+                      aria-label={`${item.name} menu`}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-48">
                   {item.children.map((child) => (
                     <DropdownMenuItem key={child.name} asChild>
                       <Link href={child.href} className="w-full cursor-pointer">
@@ -111,13 +125,14 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             ) : (
               <Link
                 key={item.name}
                 href={item.href}
-                className="px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
               >
                 {item.name}
               </Link>
