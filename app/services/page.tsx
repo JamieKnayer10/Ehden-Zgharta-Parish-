@@ -1,12 +1,13 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Baby, Heart, Award, FileText } from "lucide-react"
+import { ArrowRight, ArrowLeft, Baby, Heart, Award, FileText } from "lucide-react"
 
 const services = [
   {
@@ -48,10 +49,12 @@ const services = [
 ]
 
 export default function ServicesPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative bg-primary py-20">
@@ -62,9 +65,19 @@ export default function ServicesPage() {
               خدمات الرعية
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-              Request certificates and documents from the parish. Fill out the appropriate 
+              Request certificates and documents from the parish. Fill out the appropriate
               form and we will process your request.
             </p>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
           </div>
         </section>
 
