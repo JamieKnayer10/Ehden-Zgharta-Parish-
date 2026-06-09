@@ -13,6 +13,7 @@ import {
   BookOpen, 
   Star, 
   Church, 
+  ArrowLeft,
   ArrowRight,
   Quote,
   Users
@@ -169,6 +170,18 @@ export default function PatriarchDouaihyPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" asChild>
+              <Link href="/about" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to About
+              </Link>
+            </Button>
           </div>
         </section>
 

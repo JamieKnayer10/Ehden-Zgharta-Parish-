@@ -1,11 +1,14 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, Church, Heart, BookOpen, ArrowRight, Calendar, Star } from "lucide-react"
+import { Users, Church, Heart, BookOpen, ArrowRight, ArrowLeft, Calendar, Star } from "lucide-react"
 
 const values = [
   {
@@ -44,6 +47,8 @@ const milestones = [
 ]
 
 export default function AboutPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -67,10 +72,19 @@ export default function AboutPage() {
             <p className="mt-2 text-2xl font-light text-primary-foreground/80">
               Vicariate of Ehden-Zgharta
             </p>
-            {/* Arabic text centered under Vicariate of Ehden-Zgharta */}
             <p className="mt-4 text-xl text-primary-foreground/70 text-center" dir="rtl">
               الأبرشية البطريركية المارونية - نيابة إهدن زغرتا
             </p>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
           </div>
         </section>
 
@@ -100,7 +114,6 @@ export default function AboutPage() {
                   </p>
                 </div>
                 <div className="mt-8 flex flex-wrap gap-4">
-                  {/* Fixed button links to actual pages */}
                   <Button asChild>
                     <Link href="/about/history">
                       Our History
@@ -191,7 +204,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Quick Links - Fixed to link to actual pages */}
+        {/* Quick Links */}
         <section className="py-16 bg-primary text-primary-foreground">
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <h2 className="font-serif text-2xl font-bold text-center mb-8">Learn More About Us</h2>

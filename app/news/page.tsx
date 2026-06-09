@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Header } from "@/components/header"
@@ -9,8 +10,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Calendar, ArrowRight, Newspaper } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Search, Calendar, ArrowRight, ArrowLeft, Newspaper } from "lucide-react"
 
 const newsArticles = [
   {
@@ -89,6 +90,7 @@ const categoryColors: Record<string, string> = {
 }
 
 export default function NewsPage() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
 
@@ -114,7 +116,6 @@ export default function NewsPage() {
           <div className="relative mx-auto max-w-7xl px-4 lg:px-8 text-center text-primary-foreground">
             <Badge variant="secondary" className="mb-4">Stay Informed</Badge>
             <h1 className="font-serif text-4xl md:text-5xl font-bold">Parish News</h1>
-            {/* Arabic text centered under Parish News */}
             <p className="mt-4 text-2xl font-light text-primary-foreground/80 text-center" dir="rtl">
               أخبار الرعية
             </p>
@@ -124,7 +125,17 @@ export default function NewsPage() {
           </div>
         </section>
 
-        {/* Featured Article */}
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
+          </div>
+        </section>
+
+        {/* Featured Articles */}
         {featuredArticles.length > 0 && (
           <section className="py-12 bg-muted/50">
             <div className="mx-auto max-w-7xl px-4 lg:px-8">

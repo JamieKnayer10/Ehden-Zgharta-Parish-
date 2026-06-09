@@ -1,8 +1,12 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Calendar, Church, MapPin, Info } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Clock, Calendar, Church, MapPin, Info, ArrowLeft } from "lucide-react"
 
 const massSchedule = [
   {
@@ -81,6 +85,8 @@ const specialMasses = [
 ]
 
 export default function MassTimesPage() {
+  const router = useRouter()
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -94,13 +100,22 @@ export default function MassTimesPage() {
           <div className="relative mx-auto max-w-7xl px-4 lg:px-8 text-center text-primary-foreground">
             <Badge variant="secondary" className="mb-4">Join Us in Prayer</Badge>
             <h1 className="font-serif text-4xl md:text-5xl font-bold">Mass Schedule</h1>
-            {/* Arabic text centered under Mass Schedule */}
             <p className="mt-4 text-2xl font-light text-primary-foreground/80 text-center" dir="rtl">
               مواعيد القداس
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">
               Find mass times for all churches in Ehden and Zgharta. Everyone is welcome to join us in worship.
             </p>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
           </div>
         </section>
 
@@ -205,7 +220,6 @@ export default function MassTimesPage() {
               you are welcome to join us in celebrating the Holy Mass. Please arrive a few minutes 
               early and feel free to approach any of our parishioners or staff if you need assistance.
             </p>
-            {/* Arabic text centered under the English paragraph */}
             <p className="mt-6 text-primary-foreground/80 text-center" dir="rtl">
               أهلاً وسهلاً بكم في رعيّتنا. نرحب بالجميع للمشاركة في القداس الإلهي.
             </p>

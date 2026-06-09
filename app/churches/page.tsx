@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Header } from "@/components/header"
@@ -9,9 +10,24 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MapPin, Church, Calendar, Clock, ArrowRight } from "lucide-react"
+import { MapPin, Church, Calendar, Clock, ArrowRight, ArrowLeft } from "lucide-react"
 
-const churches = [
+type Church = {
+  id: number
+  name: string
+  nameAr: string
+  location: string
+  type: string
+  patronSaint: string
+  patronSaintAr: string
+  description: string
+  massSchedule: string
+  image: string
+  slug: string
+  featured: boolean
+}
+
+const churches: Church[] = [
   {
     id: 1,
     name: "Mar Mama Church",
@@ -105,18 +121,19 @@ const typeLabels: Record<string, string> = {
 }
 
 export default function ChurchesPage() {
+  const router = useRouter()
   const [selectedLocation, setSelectedLocation] = useState("all")
 
-  const filteredChurches = churches.filter((church) => 
+  const filteredChurches = churches.filter((church) =>
     selectedLocation === "all" || church.location.toLowerCase() === selectedLocation
   )
 
-  const featuredChurches = churches.filter(c => c.featured)
+  const featuredChurches = churches.filter((c) => c.featured)
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative bg-primary py-20">
@@ -132,9 +149,19 @@ export default function ChurchesPage() {
               كنائس ومواقع مقدسة
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-              Discover the historic churches, monasteries, and chapels of Ehden and Zgharta 
+              Discover the historic churches, monasteries, and chapels of Ehden and Zgharta
               that have been centers of faith for generations
             </p>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
           </div>
         </section>
 
@@ -225,7 +252,7 @@ export default function ChurchesPage() {
   )
 }
 
-function ChurchGrid({ churches }: { churches: typeof churches }) {
+function ChurchGrid({ churches }: { churches: Church[] }) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {churches.map((church) => (

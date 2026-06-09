@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -15,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Download, Search, BookOpen, Calendar, Filter } from "lucide-react"
+import { Download, Search, BookOpen, Calendar, Filter, ArrowLeft } from "lucide-react"
 
 const seasons = [
   { value: "all", label: "All Seasons", labelAr: "كل المواسم" },
@@ -45,6 +46,7 @@ const bulletins = [
 const years = [2026, 2025, 2024, 2023]
 
 export default function Yanabi3Page() {
+  const router = useRouter()
   const [selectedSeason, setSelectedSeason] = useState("all")
   const [selectedYear, setSelectedYear] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
@@ -80,7 +82,6 @@ export default function Yanabi3Page() {
             <h1 className="font-serif text-4xl md:text-5xl font-bold">
               Yanabi3 Archive
             </h1>
-            {/* Arabic text centered under Yanabi3 Archive */}
             <p className="mt-4 text-3xl font-light text-primary-foreground/80 text-center" dir="rtl">
               نشرة الينابيع الرعوية
             </p>
@@ -88,6 +89,16 @@ export default function Yanabi3Page() {
               Access our complete collection of weekly pastoral bulletins with spiritual guidance, 
               liturgical readings, and parish announcements
             </p>
+          </div>
+        </section>
+
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
           </div>
         </section>
 
@@ -159,7 +170,6 @@ export default function Yanabi3Page() {
               )}
             </div>
 
-            {/* Bulletins Grid */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredBulletins.map((bulletin) => (
                 <Card key={bulletin.id} className="group border-none shadow-md hover:shadow-lg transition-all">
@@ -208,7 +218,7 @@ export default function Yanabi3Page() {
           </div>
         </section>
 
-        {/* Season Legend - Arabic text centered in boxes */}
+        {/* Season Legend */}
         <section className="py-12 bg-muted/50">
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
             <h2 className="font-serif text-2xl font-bold text-center mb-8">Liturgical Seasons</h2>
@@ -222,7 +232,6 @@ export default function Yanabi3Page() {
                   } ${season.color}`}
                 >
                   <p className="font-semibold text-center">{season.label}</p>
-                  {/* Arabic text centered */}
                   <p className="text-sm mt-1 text-center" dir="rtl">{season.labelAr}</p>
                 </button>
               ))}

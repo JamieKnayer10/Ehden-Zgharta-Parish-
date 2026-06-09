@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -25,7 +26,7 @@ import {
   MessageCircle,
   Facebook,
   Instagram,
-  Youtube,
+  ArrowLeft,
   CheckCircle
 } from "lucide-react"
 
@@ -69,16 +70,14 @@ const subjects = [
 ]
 
 export default function ContactPage() {
+  const router = useRouter()
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
     setIsLoading(false)
     setIsSubmitted(true)
   }
@@ -103,6 +102,16 @@ export default function ContactPage() {
           </div>
         </section>
 
+        {/* Back Navigation */}
+        <section className="border-b">
+          <div className="mx-auto max-w-7xl px-4 lg:px-8 py-4">
+            <Button variant="ghost" onClick={() => router.back()} className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
+          </div>
+        </section>
+
         {/* Contact Section */}
         <section className="py-16 lg:py-24">
           <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -121,10 +130,7 @@ export default function ContactPage() {
                       <p className="text-muted-foreground mt-2">
                         Thank you for contacting us. We will get back to you as soon as possible.
                       </p>
-                      <Button 
-                        className="mt-6" 
-                        onClick={() => setIsSubmitted(false)}
-                      >
+                      <Button className="mt-6" onClick={() => setIsSubmitted(false)}>
                         Send Another Message
                       </Button>
                     </CardContent>
@@ -285,20 +291,10 @@ export default function ContactPage() {
                     >
                       <Instagram className="h-5 w-5" />
                     </a>
-                   {/*
-<a 
-  href="#"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="p-3 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
->
-  <Youtube className="h-5 w-5" />
-</a>
-*/}
                   </div>
                 </div>
 
-                {/* Map Placeholder */}
+                {/* Map */}
                 <div className="mt-8" id="map">
                   <h3 className="font-semibold text-foreground mb-4">Location</h3>
                   <div className="aspect-video rounded-xl overflow-hidden bg-muted">
