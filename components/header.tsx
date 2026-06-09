@@ -96,14 +96,25 @@ export function Header() {
         <div className="hidden lg:flex lg:gap-x-1">
           {navigation.map((item) => (
             item.children ? (
-              <DropdownMenu key={item.name}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-1 text-sm font-medium">
-                    {item.name}
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="w-48">
+              <div key={item.name} className="flex items-center">
+                <Link
+                  href={item.href}
+                  className="px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+                >
+                  {item.name}
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      aria-label={`${item.name} menu`}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-48">
                   {item.children.map((child) => (
                     <DropdownMenuItem key={child.name} asChild>
                       <Link href={child.href} className="w-full cursor-pointer">
@@ -111,8 +122,9 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             ) : (
               <Link
                 key={item.name}
