@@ -96,10 +96,13 @@ export function Header() {
         <div className="hidden lg:flex lg:gap-x-1">
           {navigation.map((item) => (
             item.children ? (
-              <div key={item.name} className="flex items-center">
+              <div
+                key={item.name}
+                className="group flex items-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
                 <Link
                   href={item.href}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="rounded-md py-2 pl-3 pr-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-accent-foreground"
                 >
                   {item.name}
                 </Link>
@@ -108,7 +111,7 @@ export function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-8 w-8 pr-1 hover:bg-transparent group-hover:text-accent-foreground"
                       aria-label={`${item.name} menu`}
                     >
                       <ChevronDown className="h-4 w-4" />
