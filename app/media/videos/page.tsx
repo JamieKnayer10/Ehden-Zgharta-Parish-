@@ -218,7 +218,7 @@ export default function VideosPage() {
             <h1 className="font-serif text-4xl font-bold text-primary-foreground md:text-5xl lg:text-6xl">
               Video Gallery
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-primary-foreground/80">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-secondary">
               معرض الفيديوهات
             </p>
             <p className="mx-auto mt-2 max-w-2xl text-primary-foreground/70">
