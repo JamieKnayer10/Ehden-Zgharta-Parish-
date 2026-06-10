@@ -145,7 +145,7 @@ export default function ChurchesPage() {
             <h1 className="font-serif text-4xl md:text-5xl font-bold">
               Churches & Holy Sites
             </h1>
-            <p className="mt-2 text-2xl font-light text-primary-foreground/80" dir="rtl">
+            <p className="mt-2 text-2xl font-light text-secondary" dir="rtl">
               كنائس ومواقع مقدسة
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">

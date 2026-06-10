@@ -133,7 +133,7 @@ export default function RadioEhdenPage() {
               />
               <h1 className="mt-6 font-serif text-4xl md:text-5xl font-bold text-white">Radio Ehden</h1>
               <p className="mt-2 text-xl text-sky-200">Voice of Wisdom & Faith</p>
-              <p className="text-sky-300" dir="rtl">صوت الحكمة والإيمان</p>
+              <p className="text-secondary" dir="rtl">صوت الحكمة والإيمان</p>
             </div>
 
             {/* Main Player Card */}

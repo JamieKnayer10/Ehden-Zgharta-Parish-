@@ -116,7 +116,7 @@ export default function NewsPage() {
           <div className="relative mx-auto max-w-7xl px-4 lg:px-8 text-center text-primary-foreground">
             <Badge variant="secondary" className="mb-4">Stay Informed</Badge>
             <h1 className="font-serif text-4xl md:text-5xl font-bold">Parish News</h1>
-            <p className="mt-4 text-2xl font-light text-primary-foreground/80 text-center" dir="rtl">
+            <p className="mt-4 text-2xl font-light text-secondary text-center" dir="rtl">
               أخبار الرعية
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">
