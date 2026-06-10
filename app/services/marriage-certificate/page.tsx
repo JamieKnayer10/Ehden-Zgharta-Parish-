@@ -54,7 +54,7 @@ export default function MarriageCertificatePage() {
                 <h1 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground">
                   Marriage Certificate
                 </h1>
-                <p className="text-xl font-light text-primary-foreground/80 mt-1" dir="rtl">
+                <p className="text-xl font-light text-secondary mt-1" dir="rtl">
                   شهادة زواج
                 </p>
               </div>

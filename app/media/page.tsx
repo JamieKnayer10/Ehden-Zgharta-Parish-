@@ -74,7 +74,7 @@ export default function MediaPage() {
               Media Center
             </Badge>
             <h1 className="font-serif text-4xl md:text-5xl font-bold text-balance">Media</h1>
-            <p className="mt-2 text-2xl font-light text-primary-foreground/80" dir="rtl">
+            <p className="mt-2 text-2xl font-light text-secondary" dir="rtl">
               الوسائط
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto text-pretty">

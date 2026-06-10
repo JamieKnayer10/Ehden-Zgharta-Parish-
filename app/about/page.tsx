@@ -72,7 +72,7 @@ export default function AboutPage() {
             <p className="mt-2 text-2xl font-light text-primary-foreground/80">
               Vicariate of Ehden-Zgharta
             </p>
-            <p className="mt-4 text-xl text-primary-foreground/70 text-center" dir="rtl">
+            <p className="mt-4 text-xl text-secondary text-center" dir="rtl">
               الأبرشية البطريركية المارونية - نيابة إهدن زغرتا
             </p>
           </div>

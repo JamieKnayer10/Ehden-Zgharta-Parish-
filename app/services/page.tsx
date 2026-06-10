@@ -61,7 +61,7 @@ export default function ServicesPage() {
           <div className="relative mx-auto max-w-7xl px-4 lg:px-8 text-center text-primary-foreground">
             <Badge variant="secondary" className="mb-4">Parish Services</Badge>
             <h1 className="font-serif text-4xl md:text-5xl font-bold">Services</h1>
-            <p className="mt-2 text-2xl font-light text-primary-foreground/80" dir="rtl">
+            <p className="mt-2 text-2xl font-light text-secondary" dir="rtl">
               خدمات الرعية
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">

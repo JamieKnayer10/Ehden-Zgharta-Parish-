@@ -127,7 +127,7 @@ export default function HistoryPage() {
             <h1 className="font-serif text-4xl md:text-5xl font-bold">
               Our History
             </h1>
-            <p className="mt-4 text-2xl font-light text-primary-foreground/80 text-center" dir="rtl">
+            <p className="mt-4 text-2xl font-light text-secondary text-center" dir="rtl">
               تاريخنا العريق
             </p>
             <p className="mt-4 text-lg text-primary-foreground/80 max-w-2xl mx-auto">

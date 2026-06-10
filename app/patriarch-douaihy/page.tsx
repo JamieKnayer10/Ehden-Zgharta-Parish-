@@ -128,7 +128,7 @@ export default function PatriarchDouaihyPage() {
                   Patriarch Stephane Douaihy
                 </h1>
                 {/* Arabic text aligned with title */}
-                <p className="mt-4 text-3xl font-light text-primary-foreground/80" dir="rtl">
+                <p className="mt-4 text-3xl font-light text-secondary" dir="rtl">
                   الطوباوي البطريرك إسطفان الدويهي
                 </p>
                 <p className="mt-4 text-lg text-primary-foreground/80">

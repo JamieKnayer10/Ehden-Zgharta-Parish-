@@ -73,7 +73,7 @@ export default function VicarPage() {
                 <h1 className="font-serif text-4xl md:text-5xl font-bold">
                   Meet Our Vicar
                 </h1>
-                <p className="mt-4 text-2xl font-light text-primary-foreground/80" dir="rtl">
+                <p className="mt-4 text-2xl font-light text-secondary" dir="rtl">
                   النائب البطريركي
                 </p>
                 <p className="mt-6 text-xl text-primary-foreground/90">
