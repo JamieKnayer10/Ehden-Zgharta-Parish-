@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Eye, EyeOff, Loader2, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -15,14 +16,18 @@ import {
 } from "@/components/ui/card"
 
 export function LoginForm() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Auth will be wired up later. For now this just simulates a submit.
+    // Auth will be wired up later. For now this navigates to the dashboard.
     setIsSubmitting(true)
-    setTimeout(() => setIsSubmitting(false), 1200)
+    setTimeout(() => {
+      setIsSubmitting(false)
+      router.push("/admin/dashboard")
+    }, 900)
   }
 
   return (
