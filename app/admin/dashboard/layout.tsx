@@ -88,7 +88,9 @@ export default function AdminDashboardLayout({ children }: { children: ReactNode
   // Search
   const [searchQuery, setSearchQuery] = useState("")
   const [searchOpen, setSearchOpen] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const filteredItems = searchQuery.trim().length > 0
     ? SEARCH_ITEMS.filter(i => i.label.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -109,7 +111,10 @@ export default function AdminDashboardLayout({ children }: { children: ReactNode
   // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false)
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false)
+        setMobileSearchOpen(false)
+      }
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifOpen(false)
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false)
     }
@@ -131,48 +136,71 @@ export default function AdminDashboardLayout({ children }: { children: ReactNode
             <div className="ml-auto flex items-center gap-2">
               {/* Search */}
               <div ref={searchRef} className="relative">
-                <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring">
-                  <svg className="h-4 w-4 shrink-0 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                {/* Mobile: icon button to toggle search */}
+                <button
+                  onClick={() => {
+                    setMobileSearchOpen(p => {
+                      const next = !p
+                      if (next) setTimeout(() => searchInputRef.current?.focus(), 0)
+                      return next
+                    })
+                  }}
+                  aria-label="Search"
+                  className="flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:hidden"
+                >
+                  <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0Z" />
                   </svg>
-                  <input
-                    className="w-40 bg-transparent outline-none placeholder:text-muted-foreground sm:w-56"
-                    placeholder="Search pages…"
-                    value={searchQuery}
-                    onChange={e => { setSearchQuery(e.target.value); setSearchOpen(true) }}
-                    onFocus={() => setSearchOpen(true)}
-                  />
-                  {searchQuery && (
-                    <button onClick={() => { setSearchQuery(""); setSearchOpen(false) }} className="text-muted-foreground hover:text-foreground">
-                      <svg className="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                      </svg>
-                    </button>
+                </button>
+
+                {/* Search input: inline on sm+, dropdown panel on mobile when toggled */}
+                <div
+                  className={`${mobileSearchOpen ? "absolute right-0 top-full mt-1.5 w-64 z-40" : "hidden"} sm:static sm:mt-0 sm:block sm:w-auto`}
+                >
+                  <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring">
+                    <svg className="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0Z" />
+                    </svg>
+                    <input
+                      ref={searchInputRef}
+                      className="w-full bg-transparent outline-none placeholder:text-muted-foreground sm:w-56"
+                      placeholder="Search pages…"
+                      value={searchQuery}
+                      onChange={e => { setSearchQuery(e.target.value); setSearchOpen(true) }}
+                      onFocus={() => setSearchOpen(true)}
+                    />
+                    {searchQuery && (
+                      <button onClick={() => { setSearchQuery(""); setSearchOpen(false) }} className="text-muted-foreground hover:text-foreground">
+                        <svg className="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+
+                  {searchOpen && filteredItems.length > 0 && (
+                    <div className="absolute left-0 top-full mt-1.5 w-full min-w-[200px] rounded-md border bg-popover p-1 shadow-md">
+                      {filteredItems.map(item => (
+                        <button
+                          key={item.href}
+                          className="flex w-full items-center gap-2 rounded-sm px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
+                          onClick={() => { router.push(item.href); setSearchOpen(false); setMobileSearchOpen(false); setSearchQuery("") }}
+                        >
+                          <svg className="h-3.5 w-3.5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                          </svg>
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {searchOpen && searchQuery.trim().length > 0 && filteredItems.length === 0 && (
+                    <div className="absolute left-0 top-full mt-1.5 w-full rounded-md border bg-popover px-3 py-4 text-center text-sm text-muted-foreground shadow-md">
+                      No results for &ldquo;{searchQuery}&rdquo;
+                    </div>
                   )}
                 </div>
-
-                {searchOpen && filteredItems.length > 0 && (
-                  <div className="absolute left-0 top-full mt-1.5 w-full min-w-[200px] rounded-md border bg-popover p-1 shadow-md">
-                    {filteredItems.map(item => (
-                      <button
-                        key={item.href}
-                        className="flex w-full items-center gap-2 rounded-sm px-3 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => { router.push(item.href); setSearchOpen(false); setSearchQuery("") }}
-                      >
-                        <svg className="h-3.5 w-3.5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                        </svg>
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {searchOpen && searchQuery.trim().length > 0 && filteredItems.length === 0 && (
-                  <div className="absolute left-0 top-full mt-1.5 w-full rounded-md border bg-popover px-3 py-4 text-center text-sm text-muted-foreground shadow-md">
-                    No results for &ldquo;{searchQuery}&rdquo;
-                  </div>
-                )}
               </div>
 
               {/* Notifications */}
