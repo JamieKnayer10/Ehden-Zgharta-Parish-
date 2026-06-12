@@ -130,7 +130,7 @@ export default function AdminDashboardLayout({ children }: { children: ReactNode
 
             <div className="ml-auto flex items-center gap-2">
               {/* Search */}
-              <div ref={searchRef} className="relative">
+              <div ref={searchRef} className="relative hidden sm:block">
                 <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring">
                   <svg className="h-4 w-4 shrink-0 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0Z" />

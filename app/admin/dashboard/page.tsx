@@ -118,7 +118,7 @@ export default function DashboardOverviewPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent News */}
-        <Card className="lg:col-span-2">
+        <Card className="min-w-0 lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <div>
               <CardTitle className="font-serif">Recent Articles</CardTitle>
