@@ -144,8 +144,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
   body {
     @apply bg-background text-foreground;
+    /* Prevent horizontal overflow that forces users to zoom out on mobile */
+    max-width: 100%;
+    overflow-x: hidden;
   }
   
   /* Custom scrollbar for WebKit browsers */

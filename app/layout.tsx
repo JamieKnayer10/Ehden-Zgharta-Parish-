@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Cormorant_Garamond, Noto_Naskh_Arabic } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -25,6 +25,13 @@ export const metadata: Metadata = {
     icon: '/images/parish logo 1.png',
     apple: '/images/parish logo 1.png',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#1a2744',
 }
 
 export default function RootLayout({
