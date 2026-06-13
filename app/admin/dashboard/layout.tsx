@@ -155,7 +155,7 @@ export default function AdminDashboardLayout({ children }: { children: ReactNode
 
                 {/* Search input: inline on sm+, dropdown panel on mobile when toggled */}
                 <div
-                  className={`${mobileSearchOpen ? "absolute right-0 top-full mt-1.5 w-64 z-40" : "hidden"} sm:static sm:mt-0 sm:block sm:w-auto`}
+                  className={`${mobileSearchOpen ? "absolute right-0 top-full mt-1.5 w-64 z-50 rounded-md border bg-popover p-2 shadow-lg" : "hidden"} sm:static sm:mt-0 sm:block sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none`}
                 >
                   <div className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring">
                     <svg className="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
