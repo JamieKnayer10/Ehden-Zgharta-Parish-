@@ -40,6 +40,7 @@ import {
   type VideoItem,
   type Status,
 } from "@/components/admin/admin-data"
+import { ViewToggle, type ViewMode } from "@/components/admin/view-toggle"
 
 type FormState = Omit<VideoItem, "id">
 
@@ -55,6 +56,7 @@ const emptyForm: FormState = {
 export default function VideosAdminPage() {
   const { videos, addVideo, updateVideo, deleteVideo } = useAdminData()
   const [search, setSearch] = useState("")
+  const [view, setView] = useState<ViewMode>("grid")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
@@ -121,49 +123,111 @@ export default function VideosAdminPage() {
         </Button>
       </div>
 
-      <div className="relative w-full sm:max-w-xs">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search videos..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      <div className="flex items-center gap-3">
+        <div className="relative w-full sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search videos..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <ViewToggle view={view} onChange={setView} />
       </div>
 
       {filtered.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((item) => (
-            <Card key={item.id} className="group overflow-hidden">
-              <div className="relative aspect-video overflow-hidden">
-                <Image
-                  src={item.thumbnail || "/placeholder.svg"}
-                  alt={item.title}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground">
-                  <Play className="h-4 w-4 fill-current" />
+        view === "grid" ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((item) => (
+              <Card key={item.id} className="group overflow-hidden">
+                <div className="relative aspect-video overflow-hidden">
+                  <Image
+                    src={item.thumbnail || "/placeholder.svg"}
+                    alt={item.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground">
+                    <Play className="h-4 w-4 fill-current" />
+                  </div>
+                  <Badge
+                    variant={item.status === "published" ? "default" : "secondary"}
+                    className="absolute right-3 top-3"
+                  >
+                    {item.status}
+                  </Badge>
                 </div>
+                <CardContent className="p-4">
+                  <p className="line-clamp-2 font-medium text-foreground">
+                    {item.title}
+                  </p>
+                  <p className="mt-1 truncate text-xs text-muted-foreground">
+                    {item.url}
+                  </p>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between p-4 pt-0">
+                  <Badge variant="outline" className="text-xs">
+                    {item.category}
+                  </Badge>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEdit(item)}
+                      aria-label="Edit video"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setDeleteId(item.id)}
+                      aria-label="Delete video"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {filtered.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-4 rounded-lg border p-3"
+              >
+                <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-md">
+                  <Image
+                    src={item.thumbnail || "/placeholder.svg"}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <Play className="h-4 w-4 fill-current text-white" />
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-foreground">
+                    {item.title}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {item.url}
+                  </p>
+                </div>
+                <Badge variant="outline" className="hidden text-xs sm:inline-flex">
+                  {item.category}
+                </Badge>
                 <Badge
                   variant={item.status === "published" ? "default" : "secondary"}
-                  className="absolute right-3 top-3"
+                  className="hidden sm:inline-flex"
                 >
                   {item.status}
-                </Badge>
-              </div>
-              <CardContent className="p-4">
-                <p className="line-clamp-2 font-medium text-foreground">
-                  {item.title}
-                </p>
-                <p className="mt-1 truncate text-xs text-muted-foreground">
-                  {item.url}
-                </p>
-              </CardContent>
-              <CardFooter className="flex items-center justify-between p-4 pt-0">
-                <Badge variant="outline" className="text-xs">
-                  {item.category}
                 </Badge>
                 <div className="flex gap-1">
                   <Button
@@ -184,10 +248,10 @@ export default function VideosAdminPage() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         <div className="rounded-lg border border-dashed py-16 text-center">
           <Video className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />

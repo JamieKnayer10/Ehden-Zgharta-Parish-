@@ -43,6 +43,7 @@ import {
   photoAlbums,
   type PhotoItem,
 } from "@/components/admin/admin-data"
+import { ViewToggle, type ViewMode } from "@/components/admin/view-toggle"
 
 type FormState = Omit<PhotoItem, "id">
 
@@ -57,6 +58,7 @@ export default function GalleryAdminPage() {
   const { photos, addPhoto, updatePhoto, deletePhoto } = useAdminData()
   const [search, setSearch] = useState("")
   const [albumFilter, setAlbumFilter] = useState("all")
+  const [view, setView] = useState<ViewMode>("grid")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
@@ -148,55 +150,108 @@ export default function GalleryAdminPage() {
         <p className="text-sm text-muted-foreground sm:ml-auto">
           {filtered.length} photo{filtered.length !== 1 ? "s" : ""}
         </p>
+        <ViewToggle view={view} onChange={setView} />
       </div>
 
-      {/* Grid */}
+      {/* Grid / List */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((item) => (
-            <Card key={item.id} className="group overflow-hidden">
-              <div className="relative aspect-square overflow-hidden">
-                <Image
-                  src={item.image || "/placeholder.svg"}
-                  alt={item.title}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+        view === "grid" ? (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {filtered.map((item) => (
+              <Card key={item.id} className="group overflow-hidden">
+                <div className="relative aspect-square overflow-hidden">
+                  <Image
+                    src={item.image || "/placeholder.svg"}
+                    alt={item.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      onClick={() => openEdit(item)}
+                      aria-label="Edit photo"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => setDeleteId(item.id)}
+                      aria-label="Delete photo"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <CardContent className="p-3">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {item.title}
+                  </p>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between p-3 pt-0">
+                  <Badge variant="outline" className="text-xs">
+                    {item.album}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    {item.date}
+                  </span>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {filtered.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-4 rounded-lg border p-3"
+              >
+                <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md">
+                  <Image
+                    src={item.image || "/placeholder.svg"}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-foreground">
+                    {item.title}
+                  </p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      {item.album}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {item.date}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-1">
                   <Button
+                    variant="ghost"
                     size="icon"
-                    variant="secondary"
                     onClick={() => openEdit(item)}
                     aria-label="Edit photo"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
+                    variant="ghost"
                     size="icon"
-                    variant="destructive"
                     onClick={() => setDeleteId(item.id)}
                     aria-label="Delete photo"
+                    className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              <CardContent className="p-3">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {item.title}
-                </p>
-              </CardContent>
-              <CardFooter className="flex items-center justify-between p-3 pt-0">
-                <Badge variant="outline" className="text-xs">
-                  {item.album}
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {item.date}
-                </span>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       ) : (
         <div className="rounded-lg border border-dashed py-16 text-center">
           <Camera className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
