@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { IntroLoader } from "@/components/intro-loader"
+import { Reveal } from "@/components/reveal"
 import { HeroSection } from "@/components/sections/hero-section"
 import { MassTimesSection } from "@/components/sections/mass-times-section"
 import { Yanabi3Section } from "@/components/sections/yanabi3-section"
@@ -21,25 +22,39 @@ export default function HomePage() {
         <HeroSection />
 
         {/* Section 2: Mass Schedule */}
-        <MassTimesSection />
+        <Reveal>
+          <MassTimesSection />
+        </Reveal>
 
         {/* Section 3: Yanabi3 Bulletins */}
-        <Yanabi3Section />
+        <Reveal>
+          <Yanabi3Section />
+        </Reveal>
 
         {/* Section 4: News */}
-        <NewsSection />
+        <Reveal>
+          <NewsSection />
+        </Reveal>
 
         {/* Section 5: Media Platforms */}
-        <MediaPlatformsSection />
+        <Reveal>
+          <MediaPlatformsSection />
+        </Reveal>
 
         {/* Section 6: Blessed Patriarch Douaihy */}
-        <PatriarchDouaihySection />
+        <Reveal>
+          <PatriarchDouaihySection />
+        </Reveal>
 
         {/* Section 7: Verse of the Day */}
-        <VerseSection />
+        <Reveal>
+          <VerseSection />
+        </Reveal>
 
         {/* Section 8: Churches & Holy Sites */}
-        <ChurchesSection />
+        <Reveal>
+          <ChurchesSection />
+        </Reveal>
       </main>
 
       <Footer />
