@@ -1,5 +1,6 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { IntroLoader } from "@/components/intro-loader"
 import { HeroSection } from "@/components/sections/hero-section"
 import { MassTimesSection } from "@/components/sections/mass-times-section"
 import { Yanabi3Section } from "@/components/sections/yanabi3-section"
@@ -12,6 +13,7 @@ import { ChurchesSection } from "@/components/sections/churches-section"
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col">
+      <IntroLoader />
       <Header />
       
       <main className="flex-1">
