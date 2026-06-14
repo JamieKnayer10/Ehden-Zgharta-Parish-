@@ -5,9 +5,21 @@ import Image from "next/image"
 
 export function IntroLoader() {
   const [hidden, setHidden] = useState(false)
-  const [mounted, setMounted] = useState(true)
+  // Only mount the loader if it hasn't already played in this browser session.
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // Show the loader only the first time the site loads in this session.
+    const alreadyShown =
+      typeof window !== "undefined" && sessionStorage.getItem("introLoaderShown") === "true"
+
+    if (alreadyShown) {
+      return
+    }
+
+    sessionStorage.setItem("introLoaderShown", "true")
+    setMounted(true)
+
     // Begin fade-out shortly after mount
     const fadeTimer = setTimeout(() => setHidden(true), 1400)
     // Remove from DOM after the fade transition completes
