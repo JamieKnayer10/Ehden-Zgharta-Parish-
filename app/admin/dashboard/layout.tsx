@@ -25,6 +25,7 @@ const SEARCH_ITEMS = [
 // --- Route label map ---
 const ROUTE_LABELS: Record<string, string> = {
   "/admin/dashboard":              "Dashboard",
+  "/admin/dashboard/mass-times":   "Mass Times",
   "/admin/dashboard/news":         "News & Articles",
   "/admin/dashboard/gallery":      "Photo Gallery",
   "/admin/dashboard/videos":       "Videos",

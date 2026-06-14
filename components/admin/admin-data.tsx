@@ -39,6 +39,30 @@ export interface VideoItem {
   status: Status
 }
 
+export interface MassScheduleRow {
+  day: string
+  times: string[]
+}
+
+export interface MassChurchItem {
+  id: string
+  church: string
+  churchAr: string
+  location: string
+  schedule: MassScheduleRow[]
+  confession: string
+}
+
+export interface SpecialMassItem {
+  id: string
+  title: string
+  date: string
+  description: string
+  location: string
+}
+
+export const massLocations = ["Ehden", "Zgharta"]
+
 export const newsCategories = [
   "Parish News",
   "Church News",
@@ -149,10 +173,96 @@ const seedVideos: VideoItem[] = [
   },
 ]
 
+const seedMassChurches: MassChurchItem[] = [
+  {
+    id: "m1",
+    church: "Mar Mama Church",
+    churchAr: "كنيسة مار ماما",
+    location: "Ehden",
+    schedule: [
+      { day: "Sunday", times: ["8:00 AM", "10:30 AM"] },
+      { day: "Monday - Friday", times: ["7:00 AM"] },
+      { day: "Saturday", times: ["7:00 AM", "6:00 PM"] },
+    ],
+    confession: "Saturday 5:00 PM - 6:00 PM",
+  },
+  {
+    id: "m2",
+    church: "St. George Cathedral",
+    churchAr: "كاتدرائية مار جرجس",
+    location: "Zgharta",
+    schedule: [
+      { day: "Sunday", times: ["9:00 AM", "11:00 AM"] },
+      { day: "Monday - Friday", times: ["6:30 AM", "6:00 PM"] },
+      { day: "Saturday", times: ["6:30 AM", "6:00 PM"] },
+    ],
+    confession: "Saturday 4:30 PM - 5:30 PM",
+  },
+  {
+    id: "m3",
+    church: "Our Lady of Zgharta",
+    churchAr: "سيدة زغرتا",
+    location: "Zgharta",
+    schedule: [
+      { day: "Sunday", times: ["10:00 AM"] },
+      { day: "Saturday", times: ["6:00 PM (Vigil)"] },
+    ],
+    confession: "Before Sunday Mass",
+  },
+  {
+    id: "m4",
+    church: "Mar Sarkis Monastery",
+    churchAr: "دير مار سركيس",
+    location: "Ehden",
+    schedule: [
+      { day: "Sunday", times: ["8:00 AM"] },
+      { day: "Daily", times: ["6:00 AM"] },
+    ],
+    confession: "By appointment",
+  },
+  {
+    id: "m5",
+    church: "St. Anthony Church",
+    churchAr: "كنيسة مار أنطونيوس",
+    location: "Ehden",
+    schedule: [
+      { day: "Sunday", times: ["9:30 AM"] },
+      { day: "Monday - Friday", times: ["7:30 AM"] },
+    ],
+    confession: "Saturday 5:00 PM - 6:00 PM",
+  },
+]
+
+const seedSpecialMasses: SpecialMassItem[] = [
+  {
+    id: "s1",
+    title: "Easter Triduum",
+    date: "April 17-20, 2026",
+    description: "Holy Thursday, Good Friday, and Easter Vigil services",
+    location: "All Churches",
+  },
+  {
+    id: "s2",
+    title: "Feast of Mar Mama",
+    date: "August 2, 2026",
+    description: "Special celebration at Mar Mama Church",
+    location: "Mar Mama Church, Ehden",
+  },
+  {
+    id: "s3",
+    title: "Assumption of Mary",
+    date: "August 15, 2026",
+    description: "Celebration of the Assumption of the Virgin Mary",
+    location: "Our Lady of Zgharta",
+  },
+]
+
 interface AdminStore {
   news: NewsItem[]
   photos: PhotoItem[]
   videos: VideoItem[]
+  massChurches: MassChurchItem[]
+  specialMasses: SpecialMassItem[]
   addNews: (item: Omit<NewsItem, "id">) => void
   updateNews: (id: string, item: Omit<NewsItem, "id">) => void
   deleteNews: (id: string) => void
@@ -162,6 +272,12 @@ interface AdminStore {
   addVideo: (item: Omit<VideoItem, "id">) => void
   updateVideo: (id: string, item: Omit<VideoItem, "id">) => void
   deleteVideo: (id: string) => void
+  addMassChurch: (item: Omit<MassChurchItem, "id">) => void
+  updateMassChurch: (id: string, item: Omit<MassChurchItem, "id">) => void
+  deleteMassChurch: (id: string) => void
+  addSpecialMass: (item: Omit<SpecialMassItem, "id">) => void
+  updateSpecialMass: (id: string, item: Omit<SpecialMassItem, "id">) => void
+  deleteSpecialMass: (id: string) => void
 }
 
 const AdminDataContext = createContext<AdminStore | null>(null)
@@ -172,6 +288,10 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
   const [news, setNews] = useState<NewsItem[]>(seedNews)
   const [photos, setPhotos] = useState<PhotoItem[]>(seedPhotos)
   const [videos, setVideos] = useState<VideoItem[]>(seedVideos)
+  const [massChurches, setMassChurches] =
+    useState<MassChurchItem[]>(seedMassChurches)
+  const [specialMasses, setSpecialMasses] =
+    useState<SpecialMassItem[]>(seedSpecialMasses)
 
   const addNews = useCallback(
     (item: Omit<NewsItem, "id">) =>
@@ -218,12 +338,50 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const addMassChurch = useCallback(
+    (item: Omit<MassChurchItem, "id">) =>
+      setMassChurches((prev) => [{ ...item, id: uid() }, ...prev]),
+    [],
+  )
+  const updateMassChurch = useCallback(
+    (id: string, item: Omit<MassChurchItem, "id">) =>
+      setMassChurches((prev) =>
+        prev.map((m) => (m.id === id ? { ...item, id } : m)),
+      ),
+    [],
+  )
+  const deleteMassChurch = useCallback(
+    (id: string) =>
+      setMassChurches((prev) => prev.filter((m) => m.id !== id)),
+    [],
+  )
+
+  const addSpecialMass = useCallback(
+    (item: Omit<SpecialMassItem, "id">) =>
+      setSpecialMasses((prev) => [{ ...item, id: uid() }, ...prev]),
+    [],
+  )
+  const updateSpecialMass = useCallback(
+    (id: string, item: Omit<SpecialMassItem, "id">) =>
+      setSpecialMasses((prev) =>
+        prev.map((s) => (s.id === id ? { ...item, id } : s)),
+      ),
+    [],
+  )
+  const deleteSpecialMass = useCallback(
+    (id: string) =>
+      setSpecialMasses((prev) => prev.filter((s) => s.id !== id)),
+    [],
+  )
+
   return (
     <AdminDataContext.Provider
       value={{
         news,
         photos,
         videos,
+        massChurches,
+        specialMasses,
         addNews,
         updateNews,
         deleteNews,
@@ -233,6 +391,12 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
         addVideo,
         updateVideo,
         deleteVideo,
+        addMassChurch,
+        updateMassChurch,
+        deleteMassChurch,
+        addSpecialMass,
+        updateSpecialMass,
+        deleteSpecialMass,
       }}
     >
       {children}

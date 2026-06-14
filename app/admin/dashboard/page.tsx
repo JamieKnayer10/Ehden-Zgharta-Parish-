@@ -6,7 +6,7 @@ import {
   Newspaper,
   Camera,
   Video,
-  FileText,
+  Clock,
   ArrowRight,
   Plus,
   CheckCircle2,
@@ -24,12 +24,19 @@ import { Badge } from "@/components/ui/badge"
 import { useAdminData } from "@/components/admin/admin-data"
 
 export default function DashboardOverviewPage() {
-  const { news, photos, videos } = useAdminData()
+  const { news, photos, videos, massChurches } = useAdminData()
 
   const published = news.filter((n) => n.status === "published").length
   const drafts = news.filter((n) => n.status === "draft").length
 
   const stats = [
+    {
+      label: "Churches",
+      value: massChurches.length,
+      icon: Clock,
+      href: "/admin/dashboard/mass-times",
+      hint: "Mass schedules",
+    },
     {
       label: "News Articles",
       value: news.length,
@@ -50,13 +57,6 @@ export default function DashboardOverviewPage() {
       icon: Video,
       href: "/admin/dashboard/videos",
       hint: "Liturgy, events & more",
-    },
-    {
-      label: "Total Items",
-      value: news.length + photos.length + videos.length,
-      icon: FileText,
-      href: "/admin/dashboard/news",
-      hint: "All managed content",
     },
   ]
 
@@ -181,6 +181,12 @@ export default function DashboardOverviewPage() {
             <CardDescription>Jump straight to a task</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/admin/dashboard/mass-times">
+                <Clock className="h-4 w-4" />
+                Manage Mass Times
+              </Link>
+            </Button>
             <Button asChild variant="outline" className="justify-start">
               <Link href="/admin/dashboard/news">
                 <Newspaper className="h-4 w-4" />

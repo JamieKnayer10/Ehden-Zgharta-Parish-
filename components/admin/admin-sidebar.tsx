@@ -8,6 +8,7 @@ import {
   Newspaper,
   Camera,
   Video,
+  Clock,
   Settings,
   LogOut,
   ExternalLink,
@@ -28,6 +29,7 @@ import {
 
 const navItems = [
   { title: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+  { title: "Mass Times", href: "/admin/dashboard/mass-times", icon: Clock },
   { title: "News & Articles", href: "/admin/dashboard/news", icon: Newspaper },
   { title: "Photo Gallery", href: "/admin/dashboard/gallery", icon: Camera },
   { title: "Videos", href: "/admin/dashboard/videos", icon: Video },
