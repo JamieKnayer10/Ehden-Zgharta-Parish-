@@ -234,10 +234,11 @@ export default function PageContentEditor() {
 
   // keep local hero in sync if the page changes (e.g. navigating between slugs)
   const currentHero = hero && hero === page.hero ? hero : (hero ?? page.hero)
+  const pageSlug = page.slug
 
   function saveHero() {
     if (currentHero) {
-      updatePageHero(page.slug, currentHero)
+      updatePageHero(pageSlug, currentHero)
       toast.success("Page header saved")
     }
   }
