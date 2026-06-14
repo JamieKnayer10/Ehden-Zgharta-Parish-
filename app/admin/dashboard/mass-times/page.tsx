@@ -53,6 +53,42 @@ import {
   type SpecialMassItem,
   type MassScheduleRow,
 } from "@/components/admin/admin-data"
+import { DashboardHero } from "@/components/admin/dashboard-hero"
+
+// ---------- Options ----------
+const DAY_OPTIONS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Daily",
+  "Weekdays",
+  "Mon - Fri",
+  "Sat - Sun",
+]
+
+const HOUR_OPTIONS = Array.from({ length: 12 }, (_, i) => String(i + 1))
+const MINUTE_OPTIONS = ["00", "15", "30", "45"]
+const PERIOD_OPTIONS = ["AM", "PM"]
+
+function parseTime(value: string) {
+  const match = value.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)
+  if (match) {
+    return {
+      hour: match[1],
+      minute: match[2],
+      period: match[3].toUpperCase(),
+    }
+  }
+  return { hour: "8", minute: "00", period: "AM" }
+}
+
+function formatTime(hour: string, minute: string, period: string) {
+  return `${hour}:${minute} ${period}`
+}
 
 // ---------- Church form ----------
 type ChurchForm = Omit<MassChurchItem, "id">
@@ -153,6 +189,40 @@ export default function MassTimesAdminPage() {
     }))
   }
 
+  function setTime(rowIndex: number, timeIndex: number, value: string) {
+    setChurchForm((prev) => ({
+      ...prev,
+      schedule: prev.schedule.map((row, i) =>
+        i === rowIndex
+          ? {
+              ...row,
+              times: row.times.map((t, ti) => (ti === timeIndex ? value : t)),
+            }
+          : row,
+      ),
+    }))
+  }
+
+  function addTime(rowIndex: number) {
+    setChurchForm((prev) => ({
+      ...prev,
+      schedule: prev.schedule.map((row, i) =>
+        i === rowIndex ? { ...row, times: [...row.times, "8:00 AM"] } : row,
+      ),
+    }))
+  }
+
+  function removeTime(rowIndex: number, timeIndex: number) {
+    setChurchForm((prev) => ({
+      ...prev,
+      schedule: prev.schedule.map((row, i) =>
+        i === rowIndex
+          ? { ...row, times: row.times.filter((_, ti) => ti !== timeIndex) }
+          : row,
+      ),
+    }))
+  }
+
   function handleSaveChurch() {
     if (!churchForm.church.trim()) {
       toast.error("Church name is required")
@@ -234,167 +304,160 @@ export default function MassTimesAdminPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-foreground">
-            Mass Times
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Manage the mass schedule for every church and upcoming special
-            celebrations.
-          </p>
-        </div>
-        <Button onClick={openCreateChurch}>
-          <Plus className="h-4 w-4" />
-          Add Church
-        </Button>
-      </div>
+      <DashboardHero
+        badge="Join Us in Prayer"
+        title="Mass Times"
+        titleAr="مواعيد القداس"
+        description="Manage the mass schedule for every church and the upcoming special celebrations shown on the website."
+        icon={Clock}
+        action={
+          <Button
+            onClick={openCreateChurch}
+            size="lg"
+            className="bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90"
+          >
+            <Plus className="h-4 w-4" />
+            Add Church
+          </Button>
+        }
+      />
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Church className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">
-                {massChurches.length}
-              </p>
-              <p className="text-sm text-muted-foreground">Churches</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Clock className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">
-                {totalServices}
-              </p>
-              <p className="text-sm text-muted-foreground">Weekly services</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Sparkles className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-foreground">
-                {specialMasses.length}
-              </p>
-              <p className="text-sm text-muted-foreground">Special masses</p>
-            </div>
-          </CardContent>
-        </Card>
+        {[
+          { icon: Church, value: massChurches.length, label: "Churches" },
+          { icon: Clock, value: totalServices, label: "Weekly services" },
+          { icon: Sparkles, value: specialMasses.length, label: "Special masses" },
+        ].map((stat) => (
+          <Card key={stat.label} className="border-none shadow-md">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <stat.icon className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* Search */}
-      <div className="relative w-full sm:max-w-xs">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search churches..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
-      </div>
+      {/* Regular schedule section */}
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="font-serif text-xl font-bold text-foreground">
+              Regular Mass Schedule
+            </h2>
+            <div className="mt-2 h-1 w-16 rounded-full bg-secondary" />
+          </div>
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search churches..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </div>
 
-      {/* Church schedule grid */}
-      {filtered.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((church) => (
-            <Card key={church.id} className="flex flex-col">
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <CardTitle className="font-serif text-lg leading-tight">
-                      {church.church}
-                    </CardTitle>
-                    <p
-                      className="mt-1 text-sm text-muted-foreground"
-                      dir="rtl"
-                    >
-                      {church.churchAr}
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="flex shrink-0 items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {church.location}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-1 flex-col">
-                <div className="space-y-2">
-                  {church.schedule.map((row, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-start justify-between gap-2 border-b border-border py-2 last:border-0"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <span className="text-sm font-medium">{row.day}</span>
-                      </div>
-                      <div className="flex flex-wrap justify-end gap-1">
-                        {row.times.map((time, tidx) => (
-                          <Badge key={tidx} variant="secondary">
-                            {time}
-                          </Badge>
-                        ))}
-                      </div>
+        {/* Church schedule grid — styled like the website cards */}
+        {filtered.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((church) => (
+              <Card
+                key={church.id}
+                className="group flex flex-col border-none shadow-lg transition-shadow hover:shadow-xl"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <CardTitle className="font-serif text-xl leading-tight">
+                        {church.church}
+                      </CardTitle>
+                      <p className="mt-1 text-sm text-muted-foreground" dir="rtl">
+                        {church.churchAr}
+                      </p>
                     </div>
-                  ))}
-                </div>
-                <div className="mt-3 flex items-center gap-2 border-t border-dashed pt-3 text-sm">
-                  <Church className="h-4 w-4 shrink-0 text-secondary" />
-                  <span className="text-muted-foreground">Confession:</span>
-                  <span className="font-medium">{church.confession || "—"}</span>
-                </div>
-                <div className="mt-4 flex justify-end gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEditChurch(church)}
-                    aria-label="Edit church schedule"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleteChurchId(church.id)}
-                    aria-label="Delete church"
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-lg border border-dashed py-16 text-center">
-          <Church className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground">No churches found.</p>
-        </div>
-      )}
+                    <Badge
+                      variant="outline"
+                      className="flex shrink-0 items-center gap-1"
+                    >
+                      <MapPin className="h-3 w-3" />
+                      {church.location}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex flex-1 flex-col">
+                  <div className="space-y-1">
+                    {church.schedule.map((row, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start justify-between gap-2 border-b border-border py-2 last:border-0"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          <span className="text-sm font-medium">{row.day}</span>
+                        </div>
+                        <div className="flex flex-wrap justify-end gap-1">
+                          {row.times.map((time, tidx) => (
+                            <Badge key={tidx} variant="secondary">
+                              {time}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-auto flex items-center gap-2 border-t border-dashed pt-3 text-sm">
+                    <Church className="h-4 w-4 shrink-0 text-secondary" />
+                    <span className="text-muted-foreground">Confession:</span>
+                    <span className="font-medium">{church.confession || "—"}</span>
+                  </div>
+                  <div className="mt-4 flex justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEditChurch(church)}
+                      aria-label="Edit church schedule"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setDeleteChurchId(church.id)}
+                      aria-label="Delete church"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-lg border border-dashed py-16 text-center">
+            <Church className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
+            <p className="text-sm text-muted-foreground">No churches found.</p>
+          </div>
+        )}
+      </div>
 
       <Separator />
 
       {/* Special celebrations */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="font-serif text-xl font-bold text-foreground">
-              Special Celebrations
+              Upcoming Special Celebrations
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Feast days and upcoming special masses shown on the website.
+              Feast days and special masses highlighted on the website.
             </p>
           </div>
           <Button variant="outline" onClick={openCreateSpecial}>
@@ -406,13 +469,16 @@ export default function MassTimesAdminPage() {
         {specialMasses.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {specialMasses.map((mass) => (
-              <Card key={mass.id} className="bg-muted/40">
-                <CardContent className="p-5">
+              <Card
+                key={mass.id}
+                className="group border-none bg-card shadow-md transition-shadow hover:shadow-lg"
+              >
+                <CardContent className="p-6">
                   <div className="flex items-start justify-between gap-2">
                     <Badge className="bg-secondary text-secondary-foreground">
                       Special Mass
                     </Badge>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -436,7 +502,7 @@ export default function MassTimesAdminPage() {
                   <h3 className="mt-3 font-serif text-lg font-semibold">
                     {mass.title}
                   </h3>
-                  <div className="mt-2 space-y-1.5 text-sm text-muted-foreground">
+                  <div className="mt-3 space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 shrink-0" />
                       {mass.date}
@@ -529,14 +595,23 @@ export default function MassTimesAdminPage() {
                     className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-3"
                   >
                     <div className="flex items-center gap-2">
-                      <Input
-                        value={row.day}
-                        onChange={(e) =>
-                          updateScheduleRow(index, { day: e.target.value })
+                      <Select
+                        value={row.day || undefined}
+                        onValueChange={(v) =>
+                          updateScheduleRow(index, { day: v })
                         }
-                        placeholder="Day (e.g. Sunday)"
-                        className="bg-background"
-                      />
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select day" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DAY_OPTIONS.map((day) => (
+                            <SelectItem key={day} value={day}>
+                              {day}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {churchForm.schedule.length > 1 && (
                         <Button
                           type="button"
@@ -550,16 +625,104 @@ export default function MassTimesAdminPage() {
                         </Button>
                       )}
                     </div>
-                    <Input
-                      value={row.times.join(", ")}
-                      onChange={(e) =>
-                        updateScheduleRow(index, {
-                          times: e.target.value.split(","),
-                        })
-                      }
-                      placeholder="Times, comma separated (e.g. 8:00 AM, 10:30 AM)"
-                      className="bg-background"
-                    />
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Mass times
+                      </span>
+                      {row.times.map((time, tIdx) => {
+                        const parsed = parseTime(time)
+                        return (
+                          <div key={tIdx} className="flex items-center gap-1.5">
+                            <Select
+                              value={parsed.hour}
+                              onValueChange={(v) =>
+                                setTime(
+                                  index,
+                                  tIdx,
+                                  formatTime(v, parsed.minute, parsed.period),
+                                )
+                              }
+                            >
+                              <SelectTrigger className="bg-background">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {HOUR_OPTIONS.map((h) => (
+                                  <SelectItem key={h} value={h}>
+                                    {h}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <span className="text-muted-foreground">:</span>
+                            <Select
+                              value={parsed.minute}
+                              onValueChange={(v) =>
+                                setTime(
+                                  index,
+                                  tIdx,
+                                  formatTime(parsed.hour, v, parsed.period),
+                                )
+                              }
+                            >
+                              <SelectTrigger className="bg-background">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {MINUTE_OPTIONS.map((m) => (
+                                  <SelectItem key={m} value={m}>
+                                    {m}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select
+                              value={parsed.period}
+                              onValueChange={(v) =>
+                                setTime(
+                                  index,
+                                  tIdx,
+                                  formatTime(parsed.hour, parsed.minute, v),
+                                )
+                              }
+                            >
+                              <SelectTrigger className="bg-background">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {PERIOD_OPTIONS.map((p) => (
+                                  <SelectItem key={p} value={p}>
+                                    {p}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            {row.times.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="shrink-0 text-muted-foreground hover:text-destructive"
+                                onClick={() => removeTime(index, tIdx)}
+                                aria-label="Remove time"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        )
+                      })}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => addTime(index)}
+                        className="self-start text-primary hover:text-primary"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add Time
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
