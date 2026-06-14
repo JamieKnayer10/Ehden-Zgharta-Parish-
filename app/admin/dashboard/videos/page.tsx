@@ -3,12 +3,14 @@
 import { useState } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
-import { Plus, Pencil, Trash2, Search, Video, Play } from "lucide-react"
+import { Plus, Pencil, Trash2, Search, Video, Play, Star } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import {
   Dialog,
   DialogContent,
@@ -37,19 +39,25 @@ import {
 import {
   useAdminData,
   videoCategories,
-  type VideoItem,
+  type MediaVideo,
   type Status,
 } from "@/components/admin/admin-data"
 import { ViewToggle, type ViewMode } from "@/components/admin/view-toggle"
+import { MediaUpload } from "@/components/admin/media-upload"
 
-type FormState = Omit<VideoItem, "id">
+type FormState = Omit<MediaVideo, "id">
 
 const emptyForm: FormState = {
   title: "",
+  titleAr: "",
   category: videoCategories[0],
   url: "",
-  thumbnail: "/images/mountain-sunset.jpg",
-  date: new Date().toISOString().slice(0, 10),
+  thumbnail: "",
+  duration: "",
+  views: "0",
+  date: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+  description: "",
+  featured: false,
   status: "draft",
 }
 
@@ -62,9 +70,7 @@ export default function VideosAdminPage() {
   const [form, setForm] = useState<FormState>(emptyForm)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const filtered = videos.filter((v) =>
-    v.title.toLowerCase().includes(search.toLowerCase()),
-  )
+  const filtered = videos.filter((v) => v.title.toLowerCase().includes(search.toLowerCase()))
 
   function openCreate() {
     setEditingId(null)
@@ -72,7 +78,7 @@ export default function VideosAdminPage() {
     setDialogOpen(true)
   }
 
-  function openEdit(item: VideoItem) {
+  function openEdit(item: MediaVideo) {
     setEditingId(item.id)
     const { id, ...rest } = item
     setForm(rest)
@@ -85,7 +91,7 @@ export default function VideosAdminPage() {
       return
     }
     if (!form.url.trim()) {
-      toast.error("Video URL is required")
+      toast.error("A video URL or uploaded file is required")
       return
     }
     if (editingId) {
@@ -110,11 +116,9 @@ export default function VideosAdminPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-foreground">
-            Videos
-          </h1>
+          <h1 className="font-serif text-2xl font-bold text-foreground">Videos</h1>
           <p className="mt-1 text-muted-foreground">
-            Manage liturgical broadcasts, documentaries, and event recordings.
+            Add videos by URL or upload from your device, with custom thumbnails.
           </p>
         </div>
         <Button onClick={openCreate}>
@@ -126,12 +130,7 @@ export default function VideosAdminPage() {
       <div className="flex items-center gap-3">
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search videos..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          <Input placeholder="Search videos..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         <ViewToggle view={view} onChange={setView} />
       </div>
@@ -142,51 +141,31 @@ export default function VideosAdminPage() {
             {filtered.map((item) => (
               <Card key={item.id} className="group overflow-hidden">
                 <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={item.thumbnail || "/placeholder.svg"}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
+                  <Image src={item.thumbnail || "/placeholder.svg"} alt={item.title} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-primary/90 text-primary-foreground">
                     <Play className="h-4 w-4 fill-current" />
                   </div>
-                  <Badge
-                    variant={item.status === "published" ? "default" : "secondary"}
-                    className="absolute right-3 top-3"
-                  >
-                    {item.status}
-                  </Badge>
+                  <div className="absolute right-3 top-3 flex gap-1">
+                    {item.featured && (
+                      <Badge className="gap-1 bg-secondary text-secondary-foreground">
+                        <Star className="h-3 w-3 fill-current" />
+                      </Badge>
+                    )}
+                    <Badge variant={item.status === "published" ? "default" : "secondary"}>{item.status}</Badge>
+                  </div>
                 </div>
                 <CardContent className="p-4">
-                  <p className="line-clamp-2 font-medium text-foreground">
-                    {item.title}
-                  </p>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {item.url}
-                  </p>
+                  <p className="line-clamp-2 font-medium text-foreground">{item.title}</p>
+                  <p className="mt-1 truncate text-xs text-muted-foreground">{item.duration} · {item.views} views</p>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between p-4 pt-0">
-                  <Badge variant="outline" className="text-xs">
-                    {item.category}
-                  </Badge>
+                  <Badge variant="outline" className="text-xs">{item.category}</Badge>
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openEdit(item)}
-                      aria-label="Edit video"
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit video">
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setDeleteId(item.id)}
-                      aria-label="Delete video"
-                      className="text-destructive hover:text-destructive"
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => setDeleteId(item.id)} aria-label="Delete video" className="text-destructive hover:text-destructive">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -197,54 +176,23 @@ export default function VideosAdminPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {filtered.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 rounded-lg border p-3"
-              >
+              <div key={item.id} className="flex items-center gap-4 rounded-lg border p-3">
                 <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-md">
-                  <Image
-                    src={item.thumbnail || "/placeholder.svg"}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={item.thumbnail || "/placeholder.svg"} alt={item.title} fill className="object-cover" />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                     <Play className="h-4 w-4 fill-current text-white" />
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-foreground">
-                    {item.title}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {item.url}
-                  </p>
+                  <p className="truncate font-medium text-foreground">{item.title}</p>
+                  <p className="truncate text-xs text-muted-foreground">{item.category} · {item.date}</p>
                 </div>
-                <Badge variant="outline" className="hidden text-xs sm:inline-flex">
-                  {item.category}
-                </Badge>
-                <Badge
-                  variant={item.status === "published" ? "default" : "secondary"}
-                  className="hidden sm:inline-flex"
-                >
-                  {item.status}
-                </Badge>
+                <Badge variant={item.status === "published" ? "default" : "secondary"} className="hidden sm:inline-flex">{item.status}</Badge>
                 <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEdit(item)}
-                    aria-label="Edit video"
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => openEdit(item)} aria-label="Edit video">
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setDeleteId(item.id)}
-                    aria-label="Delete video"
-                    className="text-destructive hover:text-destructive"
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => setDeleteId(item.id)} aria-label="Delete video" className="text-destructive hover:text-destructive">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -263,127 +211,96 @@ export default function VideosAdminPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-serif">
-              {editingId ? "Edit Video" : "Add Video"}
-            </DialogTitle>
-            <DialogDescription>
-              Paste a YouTube or video URL and a thumbnail image.
-            </DialogDescription>
+            <DialogTitle className="font-serif">{editingId ? "Edit Video" : "Add Video"}</DialogTitle>
+            <DialogDescription>Paste a video URL or upload a file, plus a thumbnail.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-2">
-            {form.thumbnail && (
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
-                <Image
-                  src={form.thumbnail || "/placeholder.svg"}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
+            <MediaUpload
+              label="Video (URL or device file)"
+              value={form.url}
+              onChange={(v) => setForm({ ...form, url: v })}
+              kind="video"
+            />
+            <MediaUpload
+              label="Thumbnail image"
+              value={form.thumbnail}
+              onChange={(v) => setForm({ ...form, thumbnail: v })}
+              kind="image"
+            />
             <div className="flex flex-col gap-2">
               <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Video title"
-              />
+              <Input id="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Video title" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="url">Video URL</Label>
-              <Input
-                id="url"
-                value={form.url}
-                onChange={(e) => setForm({ ...form, url: e.target.value })}
-                placeholder="https://youtube.com/watch?v=..."
-              />
+              <Label htmlFor="titleAr">Title (Arabic)</Label>
+              <Input id="titleAr" dir="rtl" value={form.titleAr} onChange={(e) => setForm({ ...form, titleAr: e.target.value })} placeholder="العنوان بالعربية" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="thumbnail">Thumbnail URL</Label>
-              <Input
-                id="thumbnail"
-                value={form.thumbnail}
-                onChange={(e) =>
-                  setForm({ ...form, thumbnail: e.target.value })
-                }
-                placeholder="/images/..."
-              />
+              <Label htmlFor="description">Description</Label>
+              <Textarea id="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Short description..." rows={2} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <Label>Category</Label>
-                <Select
-                  value={form.category}
-                  onValueChange={(v) => setForm({ ...form, category: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {videoCategories.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {c}
-                      </SelectItem>
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={form.date}
-                  onChange={(e) => setForm({ ...form, date: e.target.value })}
-                />
+                <Input id="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} placeholder="April 2026" />
               </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(v) => setForm({ ...form, status: v as Status })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="duration">Duration</Label>
+                <Input id="duration" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="45:32" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="views">Views</Label>
+                <Input id="views" value={form.views} onChange={(e) => setForm({ ...form, views: e.target.value })} placeholder="12.5K" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label>Status</Label>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as Status })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center justify-between rounded-lg border px-3">
+                <Label htmlFor="featured" className="cursor-pointer">Featured</Label>
+                <Switch id="featured" checked={form.featured} onCheckedChange={(c) => setForm({ ...form, featured: c })} />
+              </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>
-              {editingId ? "Save Changes" : "Add Video"}
-            </Button>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave}>{editingId ? "Save Changes" : "Add Video"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
-        open={deleteId !== null}
-        onOpenChange={(open) => !open && setDeleteId(null)}
-      >
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this video?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. The video will be permanently
-              removed.
+              This action cannot be undone. The video will be permanently removed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

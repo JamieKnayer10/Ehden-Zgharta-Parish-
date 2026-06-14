@@ -9,9 +9,20 @@ import {
   Camera,
   Video,
   Clock,
+  Church,
+  BookOpen,
+  FileText,
   Settings,
   LogOut,
   ExternalLink,
+  Info,
+  Users,
+  Star,
+  Radio,
+  Tv,
+  Phone,
+  Image as ImageIcon,
+  Home,
 } from "lucide-react"
 import {
   Sidebar,
@@ -27,12 +38,28 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const navItems = [
-  { title: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+// Content collections with dedicated CRUD editors
+const contentItems = [
   { title: "Mass Times", href: "/admin/dashboard/mass-times", icon: Clock },
+  { title: "Churches", href: "/admin/dashboard/churches", icon: Church },
   { title: "News & Articles", href: "/admin/dashboard/news", icon: Newspaper },
   { title: "Photo Gallery", href: "/admin/dashboard/gallery", icon: Camera },
   { title: "Videos", href: "/admin/dashboard/videos", icon: Video },
+  { title: "Yanabi3 Bulletins", href: "/admin/dashboard/yanabi3", icon: BookOpen },
+]
+
+// Informational website pages edited via the Pages content manager
+const pageItems = [
+  { title: "Home", href: "/admin/dashboard/pages/home", icon: Home },
+  { title: "About", href: "/admin/dashboard/pages/about", icon: Info },
+  { title: "History", href: "/admin/dashboard/pages/history", icon: BookOpen },
+  { title: "The Vicar", href: "/admin/dashboard/pages/vicar", icon: Users },
+  { title: "Patriarch Douaihy", href: "/admin/dashboard/pages/patriarch", icon: Star },
+  { title: "Services", href: "/admin/dashboard/pages/services", icon: FileText },
+  { title: "Media Center", href: "/admin/dashboard/pages/media", icon: ImageIcon },
+  { title: "Radio Ehden", href: "/admin/dashboard/pages/radio", icon: Radio },
+  { title: "Zgharta Channel", href: "/admin/dashboard/pages/channel", icon: Tv },
+  { title: "Contact", href: "/admin/dashboard/pages/contact", icon: Phone },
 ]
 
 const secondaryItems = [
@@ -74,14 +101,55 @@ export function AdminSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/admin/dashboard"}
+                  tooltip="Overview"
+                >
+                  <Link href="/admin/dashboard">
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Overview</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
           <SidebarGroupLabel>Content</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {contentItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     asChild
                     isActive={isActive(item.href)}
+                    tooltip={item.title}
+                  >
+                    <Link href={item.href}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Website Pages</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {pageItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
                     tooltip={item.title}
                   >
                     <Link href={item.href}>

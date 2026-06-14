@@ -7,10 +7,13 @@ import {
   Camera,
   Video,
   Clock,
+  Church,
+  BookOpen,
   ArrowRight,
   Plus,
   CheckCircle2,
   PencilLine,
+  FileText,
 } from "lucide-react"
 import {
   Card,
@@ -24,40 +27,19 @@ import { Badge } from "@/components/ui/badge"
 import { useAdminData } from "@/components/admin/admin-data"
 
 export default function DashboardOverviewPage() {
-  const { news, photos, videos, massChurches } = useAdminData()
+  const { news, galleryPhotos, videos, massChurches, churches, bulletins, pages } =
+    useAdminData()
 
   const published = news.filter((n) => n.status === "published").length
   const drafts = news.filter((n) => n.status === "draft").length
 
   const stats = [
-    {
-      label: "Churches",
-      value: massChurches.length,
-      icon: Clock,
-      href: "/admin/dashboard/mass-times",
-      hint: "Mass schedules",
-    },
-    {
-      label: "News Articles",
-      value: news.length,
-      icon: Newspaper,
-      href: "/admin/dashboard/news",
-      hint: `${published} published · ${drafts} drafts`,
-    },
-    {
-      label: "Photos",
-      value: photos.length,
-      icon: Camera,
-      href: "/admin/dashboard/gallery",
-      hint: "Across all albums",
-    },
-    {
-      label: "Videos",
-      value: videos.length,
-      icon: Video,
-      href: "/admin/dashboard/videos",
-      hint: "Liturgy, events & more",
-    },
+    { label: "Churches", value: churches.length, icon: Church, href: "/admin/dashboard/churches", hint: "Holy sites & profiles" },
+    { label: "Mass Schedules", value: massChurches.length, icon: Clock, href: "/admin/dashboard/mass-times", hint: "Weekly mass times" },
+    { label: "News Articles", value: news.length, icon: Newspaper, href: "/admin/dashboard/news", hint: `${published} published · ${drafts} drafts` },
+    { label: "Photos", value: galleryPhotos.length, icon: Camera, href: "/admin/dashboard/gallery", hint: "Gallery images" },
+    { label: "Videos", value: videos.length, icon: Video, href: "/admin/dashboard/videos", hint: "Liturgy, events & more" },
+    { label: "Bulletins", value: bulletins.length, icon: BookOpen, href: "/admin/dashboard/yanabi3", hint: "Yanabi3 archive" },
   ]
 
   const recentNews = news.slice(0, 4)
@@ -71,10 +53,10 @@ export default function DashboardOverviewPage() {
             Welcome back
           </h1>
           <p className="mt-1 text-muted-foreground">
-            Manage your parish news, photos, and videos from one place.
+            Manage every page of the parish website from one place.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link href="/admin/dashboard/gallery">
               <Camera className="h-4 w-4" />
@@ -91,24 +73,18 @@ export default function DashboardOverviewPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {stats.map((stat) => (
           <Link key={stat.label} href={stat.href}>
-            <Card className="group transition-all hover:shadow-md hover:-translate-y-0.5">
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Card className="group h-full transition-all hover:shadow-md hover:-translate-y-0.5">
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <stat.icon className="h-6 w-6" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-2xl font-bold text-foreground">
-                    {stat.value}
-                  </p>
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {stat.label}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {stat.hint}
-                  </p>
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className="truncate text-sm font-medium text-foreground">{stat.label}</p>
+                  <p className="truncate text-xs text-muted-foreground">{stat.hint}</p>
                 </div>
               </CardContent>
             </Card>
@@ -133,79 +109,42 @@ export default function DashboardOverviewPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             {recentNews.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 rounded-lg border p-3"
-              >
+              <div key={item.id} className="flex items-center gap-4 rounded-lg border p-3">
                 <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md">
-                  <Image
-                    src={item.image || "/placeholder.svg"}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
+                  <Image src={item.image || "/placeholder.svg"} alt={item.title} fill className="object-cover" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-foreground">
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {item.category} · {item.date}
-                  </p>
+                  <p className="truncate font-medium text-foreground">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">{item.category} · {item.date}</p>
                 </div>
-                <Badge
-                  variant={item.status === "published" ? "default" : "secondary"}
-                  className="shrink-0 gap-1"
-                >
-                  {item.status === "published" ? (
-                    <CheckCircle2 className="h-3 w-3" />
-                  ) : (
-                    <PencilLine className="h-3 w-3" />
-                  )}
+                <Badge variant={item.status === "published" ? "default" : "secondary"} className="shrink-0 gap-1">
+                  {item.status === "published" ? <CheckCircle2 className="h-3 w-3" /> : <PencilLine className="h-3 w-3" />}
                   {item.status}
                 </Badge>
               </div>
             ))}
             {recentNews.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                No articles yet.
-              </p>
+              <p className="py-6 text-center text-sm text-muted-foreground">No articles yet.</p>
             )}
           </CardContent>
         </Card>
 
-        {/* Quick actions */}
+        {/* Website pages quick access */}
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif">Quick Actions</CardTitle>
-            <CardDescription>Jump straight to a task</CardDescription>
+            <CardTitle className="font-serif">Website Pages</CardTitle>
+            <CardDescription>Edit any page&apos;s content</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/mass-times">
-                <Clock className="h-4 w-4" />
-                Manage Mass Times
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/news">
-                <Newspaper className="h-4 w-4" />
-                Manage News
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/gallery">
-                <Camera className="h-4 w-4" />
-                Manage Gallery
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/videos">
-                <Video className="h-4 w-4" />
-                Manage Videos
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
+            {pages.map((page) => (
+              <Button key={page.slug} asChild variant="outline" className="justify-start">
+                <Link href={`/admin/dashboard/pages/${page.slug}`}>
+                  <FileText className="h-4 w-4" />
+                  {page.name}
+                </Link>
+              </Button>
+            ))}
+            <Button asChild variant="ghost" className="justify-start">
               <Link href="/" target="_blank">
                 <ArrowRight className="h-4 w-4" />
                 Preview Website

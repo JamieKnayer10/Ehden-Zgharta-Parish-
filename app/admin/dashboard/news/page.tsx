@@ -55,6 +55,7 @@ import {
   type NewsItem,
   type Status,
 } from "@/components/admin/admin-data"
+import { MediaUpload } from "@/components/admin/media-upload"
 
 type FormState = Omit<NewsItem, "id">
 
@@ -308,15 +309,12 @@ export default function NewsAdminPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="/images/..."
-              />
-            </div>
+            <MediaUpload
+              label="Image"
+              value={form.image}
+              onChange={(v) => setForm({ ...form, image: v })}
+              kind="image"
+            />
             <div className="flex flex-col gap-2">
               <Label>Status</Label>
               <Select
