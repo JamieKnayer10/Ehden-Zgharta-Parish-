@@ -26,16 +26,19 @@ export function DashboardHero({
         aria-hidden="true"
       />
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <Badge variant="secondary" className="mb-3">
             {badge}
           </Badge>
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
             <h1 className="font-serif text-3xl font-bold sm:text-4xl">
               {title}
             </h1>
             {titleAr ? (
-              <span className="font-serif text-2xl text-secondary" dir="rtl">
+              <span
+                className="font-serif text-2xl text-primary-foreground/25 sm:text-3xl"
+                dir="rtl"
+              >
                 {titleAr}
               </span>
             ) : null}
