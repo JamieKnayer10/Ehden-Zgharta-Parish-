@@ -34,7 +34,10 @@ export function DashboardHero({
             {title}
           </h1>
           {titleAr ? (
-            <p className="mt-1 font-serif text-2xl text-secondary sm:text-3xl" dir="rtl">
+            <p
+              className="mt-1 text-left font-serif text-2xl text-secondary sm:text-3xl"
+              dir="rtl"
+            >
               {titleAr}
             </p>
           ) : null}
@@ -42,7 +45,7 @@ export function DashboardHero({
             {description}
           </p>
         </div>
-        {action ? <div className="shrink-0">{action}</div> : null}
+        {action ? <div className="shrink-0 lg:self-end">{action}</div> : null}
       </div>
     </div>
   )
