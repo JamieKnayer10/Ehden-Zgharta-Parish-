@@ -75,7 +75,30 @@ export interface Yanabi3Item {
   status: Status
 }
 
+export type ChurchType = "church" | "monastery" | "chapel"
+
+export interface ChurchItem {
+  id: string
+  name: string
+  nameAr: string
+  location: string
+  type: ChurchType
+  patronSaint: string
+  patronSaintAr: string
+  description: string
+  massSchedule: string
+  image: string
+  slug: string
+  featured: boolean
+}
+
 export const massLocations = ["Ehden", "Zgharta"]
+
+export const churchTypes: { value: ChurchType; label: string }[] = [
+  { value: "church", label: "Church" },
+  { value: "monastery", label: "Monastery" },
+  { value: "chapel", label: "Chapel" },
+]
 
 export const yanabi3Seasons = [
   { value: "resurrection", label: "Resurrection", labelAr: "زمن القيامة" },
@@ -323,6 +346,99 @@ const seedYanabi3: Yanabi3Item[] = [
   },
 ]
 
+const seedChurches: ChurchItem[] = [
+  {
+    id: "c1",
+    name: "Mar Mama Church",
+    nameAr: "كنيسة مار ماما",
+    location: "Ehden",
+    type: "church",
+    patronSaint: "St. Mama",
+    patronSaintAr: "القديس ماما",
+    description:
+      "One of the oldest churches in Ehden, dating back to 749 AD. Features Greek and Syriac inscriptions and is of great historical significance.",
+    massSchedule: "Sunday: 8:00 AM, 10:30 AM | Weekdays: 7:00 AM",
+    image: "/images/mar-mama-church.jpg",
+    slug: "mar-mama",
+    featured: true,
+  },
+  {
+    id: "c2",
+    name: "St. George Cathedral",
+    nameAr: "كاتدرائية مار جرجس",
+    location: "Zgharta",
+    type: "church",
+    patronSaint: "St. George",
+    patronSaintAr: "القديس جرجس",
+    description:
+      "The main cathedral of Zgharta, serving as the spiritual center of the town. Features stunning religious artwork and architecture.",
+    massSchedule: "Sunday: 9:00 AM, 11:00 AM | Weekdays: 6:30 AM",
+    image: "/images/st-george-cathedral.jpg",
+    slug: "st-george-cathedral",
+    featured: true,
+  },
+  {
+    id: "c3",
+    name: "Our Lady of Zgharta",
+    nameAr: "سيدة زغرتا",
+    location: "Zgharta",
+    type: "church",
+    patronSaint: "Virgin Mary",
+    patronSaintAr: "العذراء مريم",
+    description:
+      "A beautiful church dedicated to the Virgin Mary, featuring traditional Maronite architecture and sacred iconography.",
+    massSchedule: "Sunday: 10:00 AM | Saturday: 6:00 PM",
+    image: "/images/our-lady-zgharta.jpg",
+    slug: "our-lady-zgharta",
+    featured: false,
+  },
+  {
+    id: "c4",
+    name: "Mar Sarkis Monastery",
+    nameAr: "دير مار سركيس",
+    location: "Ehden",
+    type: "monastery",
+    patronSaint: "St. Sergius & St. Bacchus",
+    patronSaintAr: "القديس سركيس وباخوس",
+    description:
+      "An ancient monastery dating to the 8th century, perched on mountains above Ehden with panoramic views of the valley.",
+    massSchedule: "Sunday: 8:00 AM | Daily: 6:00 AM",
+    image: "/images/mar-sarkis-monastery.jpg",
+    slug: "mar-sarkis-monastery",
+    featured: true,
+  },
+  {
+    id: "c5",
+    name: "Saydet el Hosn",
+    nameAr: "سيدة الحصن",
+    location: "Ehden",
+    type: "church",
+    patronSaint: "Virgin Mary",
+    patronSaintAr: "العذراء مريم",
+    description:
+      "A historic pilgrimage site with a modern church and iconic white Virgin Mary statue offering panoramic mountain views.",
+    massSchedule: "Sunday: 9:30 AM | Weekdays: 7:30 AM",
+    image: "/images/saydet-el-hosn.jpg",
+    slug: "saydet-el-hosn",
+    featured: false,
+  },
+  {
+    id: "c6",
+    name: "Mar Doumit Chapel",
+    nameAr: "كنيسة مار ضومط",
+    location: "Ehden",
+    type: "chapel",
+    patronSaint: "St. Doumit",
+    patronSaintAr: "القديس ضومط",
+    description:
+      "A small historic chapel in the heart of old Ehden, representing the rich religious heritage of the region.",
+    massSchedule: "Feast days only",
+    image: "/images/mar-mama-church.jpg",
+    slug: "mar-doumit",
+    featured: false,
+  },
+]
+
 interface AdminStore {
   news: NewsItem[]
   photos: PhotoItem[]
@@ -330,6 +446,7 @@ interface AdminStore {
   massChurches: MassChurchItem[]
   specialMasses: SpecialMassItem[]
   yanabi3: Yanabi3Item[]
+  churches: ChurchItem[]
   addNews: (item: Omit<NewsItem, "id">) => void
   updateNews: (id: string, item: Omit<NewsItem, "id">) => void
   deleteNews: (id: string) => void
@@ -348,6 +465,9 @@ interface AdminStore {
   addYanabi3: (item: Omit<Yanabi3Item, "id">) => void
   updateYanabi3: (id: string, item: Omit<Yanabi3Item, "id">) => void
   deleteYanabi3: (id: string) => void
+  addChurch: (item: Omit<ChurchItem, "id">) => void
+  updateChurch: (id: string, item: Omit<ChurchItem, "id">) => void
+  deleteChurch: (id: string) => void
 }
 
 const AdminDataContext = createContext<AdminStore | null>(null)
@@ -363,6 +483,7 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
   const [specialMasses, setSpecialMasses] =
     useState<SpecialMassItem[]>(seedSpecialMasses)
   const [yanabi3, setYanabi3] = useState<Yanabi3Item[]>(seedYanabi3)
+  const [churches, setChurches] = useState<ChurchItem[]>(seedChurches)
 
   const addNews = useCallback(
     (item: Omit<NewsItem, "id">) =>
@@ -462,6 +583,23 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const addChurch = useCallback(
+    (item: Omit<ChurchItem, "id">) =>
+      setChurches((prev) => [{ ...item, id: uid() }, ...prev]),
+    [],
+  )
+  const updateChurch = useCallback(
+    (id: string, item: Omit<ChurchItem, "id">) =>
+      setChurches((prev) =>
+        prev.map((c) => (c.id === id ? { ...item, id } : c)),
+      ),
+    [],
+  )
+  const deleteChurch = useCallback(
+    (id: string) => setChurches((prev) => prev.filter((c) => c.id !== id)),
+    [],
+  )
+
   return (
     <AdminDataContext.Provider
       value={{
@@ -489,6 +627,10 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
         addYanabi3,
         updateYanabi3,
         deleteYanabi3,
+        churches,
+        addChurch,
+        updateChurch,
+        deleteChurch,
       }}
     >
       {children}
