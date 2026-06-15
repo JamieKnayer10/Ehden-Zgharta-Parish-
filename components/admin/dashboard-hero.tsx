@@ -25,24 +25,19 @@ export function DashboardHero({
         className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rotate-12 opacity-10"
         aria-hidden="true"
       />
-      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0 flex-1">
           <Badge variant="secondary" className="mb-3">
             {badge}
           </Badge>
-          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
-            <h1 className="font-serif text-3xl font-bold sm:text-4xl">
-              {title}
-            </h1>
-            {titleAr ? (
-              <span
-                className="font-serif text-2xl text-primary-foreground/25 sm:text-3xl"
-                dir="rtl"
-              >
-                {titleAr}
-              </span>
-            ) : null}
-          </div>
+          <h1 className="font-serif text-3xl font-bold sm:text-4xl">
+            {title}
+          </h1>
+          {titleAr ? (
+            <p className="mt-1 font-serif text-2xl text-secondary sm:text-3xl" dir="rtl">
+              {titleAr}
+            </p>
+          ) : null}
           <p className="mt-3 max-w-2xl text-sm text-primary-foreground/80">
             {description}
           </p>
