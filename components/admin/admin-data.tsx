@@ -92,6 +92,26 @@ export interface ChurchItem {
   featured: boolean
 }
 
+export type ServiceIconName =
+  | "baby"
+  | "heart"
+  | "award"
+  | "file-text"
+
+export interface ServiceItem {
+  id: string
+  slug: string
+  title: string
+  titleAr: string
+  description: string
+  icon: ServiceIconName
+  processingTime: string
+  requiredDocuments: string[]
+  contactNote: string
+  href: string
+  status: Status
+}
+
 export const massLocations = ["Ehden", "Zgharta"]
 
 export const churchTypes: { value: ChurchType; label: string }[] = [
