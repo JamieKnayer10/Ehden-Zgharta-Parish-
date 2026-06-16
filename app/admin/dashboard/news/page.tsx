@@ -363,75 +363,7 @@ export default function NewsAdminPage() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Step indicator */}
-          <div className="flex items-center gap-3 py-1">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="flex items-center gap-2.5 text-left"
-            >
-              <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
-                  step === 1
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-primary/15 text-primary"
-                }`}
-              >
-                {step > 1 ? <CheckCircle2 className="h-5 w-5" /> : "1"}
-              </span>
-              <span className="flex flex-col leading-tight">
-                <span
-                  className={`text-sm font-medium ${
-                    step === 1 ? "text-foreground" : "text-muted-foreground"
-                  }`}
-                >
-                  Details
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Title, image &amp; settings
-                </span>
-              </span>
-            </button>
-
-            <div
-              className={`h-0.5 flex-1 rounded-full transition-colors ${
-                step === 2 ? "bg-primary" : "bg-border"
-              }`}
-            />
-
-            <button
-              type="button"
-              onClick={() => (step === 2 ? undefined : goToContent())}
-              className="flex items-center gap-2.5 text-left"
-            >
-              <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
-                  step === 2
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                }`}
-              >
-                2
-              </span>
-              <span className="flex flex-col leading-tight">
-                <span
-                  className={`text-sm font-medium ${
-                    step === 2 ? "text-foreground" : "text-muted-foreground"
-                  }`}
-                >
-                  Content
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Full article body
-                </span>
-              </span>
-            </button>
-          </div>
-          <Separator />
-
-          {step === 1 && (
-          <div className="flex flex-col gap-5">
-          {/* Image uploader */}
+          {/* Image uploader (always visible) */}
           <div className="flex flex-col gap-2">
             <Label>Cover Image</Label>
             <input
@@ -503,6 +435,63 @@ export default function NewsAdminPage() {
             />
           </div>
 
+          {/* Step indicator (under image) */}
+          <div className="flex items-start justify-center gap-4 py-3">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="flex w-24 flex-col items-center gap-2"
+            >
+              <span
+                className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-base font-semibold transition-colors ${
+                  step === 1
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-primary bg-background text-primary"
+                }`}
+              >
+                {step > 1 ? <CheckCircle2 className="h-6 w-6" /> : "1"}
+              </span>
+              <span
+                className={`text-sm font-medium ${
+                  step === 1 ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                Details
+              </span>
+            </button>
+
+            <span
+              className={`mt-6 h-0.5 w-16 rounded-full transition-colors ${
+                step === 2 ? "bg-primary" : "bg-border"
+              }`}
+            />
+
+            <button
+              type="button"
+              onClick={() => (step === 2 ? undefined : goToContent())}
+              className="flex w-24 flex-col items-center gap-2"
+            >
+              <span
+                className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-base font-semibold transition-colors ${
+                  step === 2
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-muted-foreground"
+                }`}
+              >
+                2
+              </span>
+              <span
+                className={`text-sm font-medium ${
+                  step === 2 ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                Content
+              </span>
+            </button>
+          </div>
+          <Separator />
+
+          {step === 1 && (
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="title">Title</Label>
@@ -612,7 +601,6 @@ export default function NewsAdminPage() {
                 />
               </div>
             </div>
-          </div>
           )}
 
           {step === 2 && (
