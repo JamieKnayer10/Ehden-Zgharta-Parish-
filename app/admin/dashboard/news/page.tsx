@@ -17,6 +17,8 @@ import {
   User,
   ImageIcon,
   X,
+  ArrowRight,
+  ArrowLeft,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -51,12 +53,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs"
 import {
   useAdminData,
   newsCategories,
@@ -97,6 +93,7 @@ export default function NewsAdminPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
+  const [step, setStep] = useState<1 | 2>(1)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -116,6 +113,7 @@ export default function NewsAdminPage() {
   function openCreate() {
     setEditingId(null)
     setForm(emptyForm)
+    setStep(1)
     setDialogOpen(true)
   }
 
@@ -123,7 +121,20 @@ export default function NewsAdminPage() {
     setEditingId(item.id)
     const { id, ...rest } = item
     setForm({ ...emptyForm, ...rest })
+    setStep(1)
     setDialogOpen(true)
+  }
+
+  function goToContent() {
+    if (!form.title.trim()) {
+      toast.error("Title is required")
+      return
+    }
+    if (!form.excerpt.trim()) {
+      toast.error("Excerpt is required")
+      return
+    }
+    setStep(2)
   }
 
   function handleImageFile(file: File) {
@@ -352,7 +363,7 @@ export default function NewsAdminPage() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Image uploader */}
+          {/* Image uploader (always visible) */}
           <div className="flex flex-col gap-2">
             <Label>Cover Image</Label>
             <input
@@ -424,13 +435,64 @@ export default function NewsAdminPage() {
             />
           </div>
 
-          <Tabs defaultValue="details" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="content">Content</TabsTrigger>
-            </TabsList>
+          {/* Step indicator (under image) */}
+          <div className="flex items-start justify-center gap-4 py-3">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="flex w-24 flex-col items-center gap-2"
+            >
+              <span
+                className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-base font-semibold transition-colors ${
+                  step === 1
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-primary bg-background text-primary"
+                }`}
+              >
+                {step > 1 ? <CheckCircle2 className="h-6 w-6" /> : "1"}
+              </span>
+              <span
+                className={`text-sm font-medium ${
+                  step === 1 ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                Details
+              </span>
+            </button>
 
-            <TabsContent value="details" className="flex flex-col gap-4 pt-4">
+            <span
+              className={`mt-6 h-0.5 w-16 rounded-full transition-colors ${
+                step === 2 ? "bg-primary" : "bg-border"
+              }`}
+            />
+
+            <button
+              type="button"
+              onClick={() => (step === 2 ? undefined : goToContent())}
+              className="flex w-24 flex-col items-center gap-2"
+            >
+              <span
+                className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-base font-semibold transition-colors ${
+                  step === 2
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-muted-foreground"
+                }`}
+              >
+                2
+              </span>
+              <span
+                className={`text-sm font-medium ${
+                  step === 2 ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                Content
+              </span>
+            </button>
+          </div>
+          <Separator />
+
+          {step === 1 && (
+            <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
@@ -538,9 +600,11 @@ export default function NewsAdminPage() {
                   onCheckedChange={(v) => setForm({ ...form, featured: v })}
                 />
               </div>
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="content" className="flex flex-col gap-2 pt-4">
+          {step === 2 && (
+            <div className="flex flex-col gap-2 pt-1">
               <Label htmlFor="content">Full Article Body</Label>
               <Textarea
                 id="content"
@@ -552,16 +616,34 @@ export default function NewsAdminPage() {
               <p className="text-xs text-muted-foreground">
                 This is the full story shown on the article detail page.
               </p>
-            </TabsContent>
-          </Tabs>
+            </div>
+          )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>
-              {editingId ? "Save Changes" : "Create Article"}
-            </Button>
+            {step === 1 ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={goToContent}>
+                  Next: Content
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => setStep(1)}>
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Details
+                </Button>
+                <Button onClick={handleSave}>
+                  {editingId ? "Save Changes" : "Create Article"}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
