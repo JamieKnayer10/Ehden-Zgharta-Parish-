@@ -75,6 +75,73 @@ export interface Yanabi3Item {
   status: Status
 }
 
+export type ServiceSlug =
+  | "first-sacrifice"
+  | "marriage-certificate"
+  | "confirmation-certificate"
+  | "death-certificate"
+
+export type RequestStatus = "pending" | "approved" | "completed" | "rejected"
+
+export interface ServiceRequest {
+  id: string
+  service: ServiceSlug
+  subjectName: string
+  requesterName: string
+  phone: string
+  email: string
+  date: string
+  status: RequestStatus
+  notes: string
+}
+
+export interface ServiceInfo {
+  slug: ServiceSlug
+  title: string
+  titleAr: string
+  description: string
+  href: string
+}
+
+export const serviceCatalog: ServiceInfo[] = [
+  {
+    slug: "first-sacrifice",
+    title: "The First Sacrifice",
+    titleAr: "القربانة الأولى",
+    description:
+      "First Holy Communion registrations and certificate requests.",
+    href: "/admin/dashboard/services/first-sacrifice",
+  },
+  {
+    slug: "marriage-certificate",
+    title: "Marriage Certificate",
+    titleAr: "شهادة زواج",
+    description: "Marriage certificate requests from parish records.",
+    href: "/admin/dashboard/services/marriage-certificate",
+  },
+  {
+    slug: "confirmation-certificate",
+    title: "Certificate of Confirmation",
+    titleAr: "شهادة تثبيت",
+    description: "Sacrament of Confirmation certificate requests.",
+    href: "/admin/dashboard/services/confirmation-certificate",
+  },
+  {
+    slug: "death-certificate",
+    title: "Death Certificate",
+    titleAr: "شهادة وفاة",
+    description: "Death certificate requests from parish records.",
+    href: "/admin/dashboard/services/death-certificate",
+  },
+]
+
+export const requestStatuses: { value: RequestStatus; label: string }[] = [
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "completed", label: "Completed" },
+  { value: "rejected", label: "Rejected" },
+]
+
 export type ChurchType = "church" | "monastery" | "chapel"
 
 export interface ChurchItem {
@@ -439,6 +506,64 @@ const seedChurches: ChurchItem[] = [
   },
 ]
 
+const seedServiceRequests: ServiceRequest[] = [
+  {
+    id: "sr1",
+    service: "first-sacrifice",
+    subjectName: "Maroun Estephan",
+    requesterName: "Estephan Estephan",
+    phone: "+961 70 123 456",
+    email: "estephan@example.com",
+    date: "2026-04-05",
+    status: "pending",
+    notes: "First Holy Communion registration for spring program.",
+  },
+  {
+    id: "sr2",
+    service: "marriage-certificate",
+    subjectName: "Georges & Rita Khoury",
+    requesterName: "Georges Khoury",
+    phone: "+961 71 987 654",
+    email: "g.khoury@example.com",
+    date: "2026-04-02",
+    status: "approved",
+    notes: "Replacement copy for immigration purposes.",
+  },
+  {
+    id: "sr3",
+    service: "confirmation-certificate",
+    subjectName: "Joseph Frangieh",
+    requesterName: "Joseph Frangieh",
+    phone: "+961 76 222 333",
+    email: "j.frangieh@example.com",
+    date: "2026-03-28",
+    status: "completed",
+    notes: "Confirmed at St. George Cathedral.",
+  },
+  {
+    id: "sr4",
+    service: "death-certificate",
+    subjectName: "Late Boutros Obeid",
+    requesterName: "Marie Obeid",
+    phone: "+961 03 444 555",
+    email: "m.obeid@example.com",
+    date: "2026-03-20",
+    status: "pending",
+    notes: "Requested for inheritance documentation.",
+  },
+  {
+    id: "sr5",
+    service: "first-sacrifice",
+    subjectName: "Tia Sleiman",
+    requesterName: "Sleiman Sleiman",
+    phone: "+961 78 111 222",
+    email: "sleiman@example.com",
+    date: "2026-03-15",
+    status: "completed",
+    notes: "",
+  },
+]
+
 interface AdminStore {
   news: NewsItem[]
   photos: PhotoItem[]
@@ -447,6 +572,7 @@ interface AdminStore {
   specialMasses: SpecialMassItem[]
   yanabi3: Yanabi3Item[]
   churches: ChurchItem[]
+  serviceRequests: ServiceRequest[]
   addNews: (item: Omit<NewsItem, "id">) => void
   updateNews: (id: string, item: Omit<NewsItem, "id">) => void
   deleteNews: (id: string) => void
@@ -468,6 +594,10 @@ interface AdminStore {
   addChurch: (item: Omit<ChurchItem, "id">) => void
   updateChurch: (id: string, item: Omit<ChurchItem, "id">) => void
   deleteChurch: (id: string) => void
+  addServiceRequest: (item: Omit<ServiceRequest, "id">) => void
+  updateServiceRequest: (id: string, item: Omit<ServiceRequest, "id">) => void
+  updateServiceRequestStatus: (id: string, status: RequestStatus) => void
+  deleteServiceRequest: (id: string) => void
 }
 
 const AdminDataContext = createContext<AdminStore | null>(null)
@@ -484,6 +614,8 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     useState<SpecialMassItem[]>(seedSpecialMasses)
   const [yanabi3, setYanabi3] = useState<Yanabi3Item[]>(seedYanabi3)
   const [churches, setChurches] = useState<ChurchItem[]>(seedChurches)
+  const [serviceRequests, setServiceRequests] =
+    useState<ServiceRequest[]>(seedServiceRequests)
 
   const addNews = useCallback(
     (item: Omit<NewsItem, "id">) =>
@@ -600,6 +732,31 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const addServiceRequest = useCallback(
+    (item: Omit<ServiceRequest, "id">) =>
+      setServiceRequests((prev) => [{ ...item, id: uid() }, ...prev]),
+    [],
+  )
+  const updateServiceRequest = useCallback(
+    (id: string, item: Omit<ServiceRequest, "id">) =>
+      setServiceRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...item, id } : r)),
+      ),
+    [],
+  )
+  const updateServiceRequestStatus = useCallback(
+    (id: string, status: RequestStatus) =>
+      setServiceRequests((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status } : r)),
+      ),
+    [],
+  )
+  const deleteServiceRequest = useCallback(
+    (id: string) =>
+      setServiceRequests((prev) => prev.filter((r) => r.id !== id)),
+    [],
+  )
+
   return (
     <AdminDataContext.Provider
       value={{
@@ -631,6 +788,11 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
         addChurch,
         updateChurch,
         deleteChurch,
+        serviceRequests,
+        addServiceRequest,
+        updateServiceRequest,
+        updateServiceRequestStatus,
+        deleteServiceRequest,
       }}
     >
       {children}
