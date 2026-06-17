@@ -56,6 +56,7 @@ const navItems: NavItem[] = [
     href: "/admin/dashboard/about",
     icon: Info,
     items: [
+      { title: "Overview", href: "/admin/dashboard/about" },
       { title: "The Parish", href: "/admin/dashboard/about/parish" },
       { title: "History", href: "/admin/dashboard/about/history" },
       { title: "The Vicar", href: "/admin/dashboard/about/vicar" },
@@ -98,8 +99,8 @@ const navItems: NavItem[] = [
     href: "/admin/dashboard/media",
     icon: Clapperboard,
     items: [
-      { title: "Zgharta Channel", href: "/admin/dashboard/media/zgharta-channel" },
-      { title: "Radio Ehden", href: "/admin/dashboard/media/radio-ehden" },
+      { title: "Overview", href: "/admin/dashboard/media" },
+      { title: "Channels", href: "/admin/dashboard/media/channels" },
       { title: "Photo Gallery", href: "/admin/dashboard/gallery" },
       { title: "Videos", href: "/admin/dashboard/videos" },
     ],
@@ -122,7 +123,13 @@ export function AdminSidebar() {
       : pathname === href
 
   const isGroupActive = (item: NavItem) =>
-    item.items?.some((sub) => pathname === sub.href) ?? false
+    pathname === item.href ||
+    pathname.startsWith(item.href + "/") ||
+    (item.items?.some(
+      (sub) =>
+        pathname === sub.href || pathname.startsWith(sub.href + "/"),
+    ) ??
+      false)
 
   return (
     <Sidebar collapsible="icon">

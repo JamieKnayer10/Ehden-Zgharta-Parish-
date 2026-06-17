@@ -198,6 +198,99 @@ export const videoCategories = [
   "Broadcast",
 ]
 
+export type ChannelType = "tv" | "radio"
+
+export interface ChannelItem {
+  id: string
+  name: string
+  nameAr: string
+  slug: string
+  description: string
+  descriptionAr: string
+  type: ChannelType
+  logo: string
+  cover: string
+  streamUrl: string
+  websiteUrl: string
+  socialFacebook: string
+  socialYoutube: string
+  socialInstagram: string
+  status: Status
+  featured: boolean
+}
+
+export const channelTypes: { value: ChannelType; label: string }[] = [
+  { value: "tv", label: "Television" },
+  { value: "radio", label: "Radio" },
+]
+
+export interface ContactInfo {
+  phone: string
+  email: string
+  address: string
+  addressAr: string
+  officeHours: string
+  socialFacebook: string
+  socialInstagram: string
+}
+
+export type ContactSubmissionStatus = "new" | "read" | "replied" | "archived"
+
+export interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  phone: string
+  subject: string
+  message: string
+  date: string
+  status: ContactSubmissionStatus
+}
+
+export const contactSubmissionStatuses: {
+  value: ContactSubmissionStatus
+  label: string
+}[] = [
+  { value: "new", label: "New" },
+  { value: "read", label: "Read" },
+  { value: "replied", label: "Replied" },
+  { value: "archived", label: "Archived" },
+]
+
+export type NotificationType =
+  | "info"
+  | "success"
+  | "warning"
+  | "request"
+  | "contact"
+
+export interface NotificationItem {
+  id: string
+  title: string
+  message: string
+  type: NotificationType
+  date: string
+  read: boolean
+  href?: string
+}
+
+export interface UserProfile {
+  name: string
+  email: string
+  role: string
+  avatar: string
+  phone: string
+  bio: string
+}
+
+export interface UserPreferences {
+  emailNotifications: boolean
+  pushNotifications: boolean
+  publishImmediately: boolean
+  showArabicFields: boolean
+  weeklyDigest: boolean
+}
+
 const seedNews: NewsItem[] = [
   {
     id: "n1",
@@ -564,6 +657,180 @@ const seedServiceRequests: ServiceRequest[] = [
   },
 ]
 
+const seedChannels: ChannelItem[] = [
+  {
+    id: "ch1",
+    name: "Zgharta Channel",
+    nameAr: "قناة زغرتا",
+    slug: "zgharta-channel",
+    description:
+      "The official television channel of the Ehden-Zgharta parish, broadcasting live masses, documentaries, and spiritual content.",
+    descriptionAr:
+      "القناة التلفزيونية الرسمية لرعية إهدن-زغرتا، تبث القداسات المباشرة والأفلام الوثائقية والمحتوى الروحي.",
+    type: "tv",
+    logo: "/images/st-george-cathedral.jpg",
+    cover: "/images/mar-mama-church.jpg",
+    streamUrl: "https://www.youtube.com/embed/live_stream?channel=UCexample",
+    websiteUrl: "/zgharta-channel",
+    socialFacebook: "https://facebook.com/zghartachannel",
+    socialYoutube: "https://youtube.com/zghartachannel",
+    socialInstagram: "",
+    status: "published",
+    featured: true,
+  },
+  {
+    id: "ch2",
+    name: "Radio Ehden",
+    nameAr: "راديو إهدن",
+    slug: "radio-ehden",
+    description:
+      "The parish radio station serving the Ehden-Zgharta community with spiritual programs, hymns, and live broadcasts since 2000.",
+    descriptionAr:
+      "محطة الرادio الرعوية التي تخدم مجتمع إهدن-زغرتا ببرامج روحية وترانيم وبث مباشر منذ عام 2000.",
+    type: "radio",
+    logo: "/images/ehden-landscape.jpg",
+    cover: "/images/mountain-sunset.jpg",
+    streamUrl: "https://stream.radioehden.lb/live",
+    websiteUrl: "/radio-ehden",
+    socialFacebook: "https://facebook.com/radioehden",
+    socialYoutube: "",
+    socialInstagram: "https://instagram.com/radioehden",
+    status: "published",
+    featured: true,
+  },
+]
+
+const defaultContactInfo: ContactInfo = {
+  phone: "+961 6 660 230",
+  email: "info@ehdenz.com",
+  address: "Ehden-Zgharta, North Lebanon",
+  addressAr: "إهدن-زغرتا، شمال لبنان",
+  officeHours: "Mon-Sat: 9AM - 5PM",
+  socialFacebook: "https://facebook.com/ehdenzgharta",
+  socialInstagram: "https://instagram.com/ehdenzgharta",
+}
+
+const seedContactSubmissions: ContactSubmission[] = [
+  {
+    id: "cs1",
+    name: "Maria Khoury",
+    email: "maria.k@example.com",
+    phone: "+961 70 111 222",
+    subject: "general",
+    message:
+      "I would like to inquire about the Easter schedule for all churches in the parish.",
+    date: "2026-04-06",
+    status: "new",
+  },
+  {
+    id: "cs2",
+    name: "Georges Frangieh",
+    email: "g.frangieh@example.com",
+    phone: "+961 71 333 444",
+    subject: "baptism",
+    message:
+      "We are planning a baptism for our son in June. Could you provide available dates?",
+    date: "2026-04-04",
+    status: "read",
+  },
+  {
+    id: "cs3",
+    name: "Rita Obeid",
+    email: "rita.obeid@example.com",
+    phone: "+961 76 555 666",
+    subject: "donation",
+    message:
+      "I would like to make a donation to the church restoration fund. Please advise on the process.",
+    date: "2026-04-02",
+    status: "replied",
+  },
+  {
+    id: "cs4",
+    name: "Tony Moawad",
+    email: "tony.m@example.com",
+    phone: "+961 78 777 888",
+    subject: "volunteer",
+    message:
+      "I am interested in volunteering with the youth ministry program.",
+    date: "2026-03-28",
+    status: "archived",
+  },
+]
+
+const seedNotifications: NotificationItem[] = [
+  {
+    id: "notif1",
+    title: "New contact submission",
+    message: "Maria Khoury submitted a general inquiry about Easter schedule.",
+    type: "contact",
+    date: "2026-04-06T10:30:00",
+    read: false,
+    href: "/admin/dashboard/contact",
+  },
+  {
+    id: "notif2",
+    title: "Service request pending",
+    message: "First Holy Communion request from Maroun Estephan needs review.",
+    type: "request",
+    date: "2026-04-05T14:15:00",
+    read: false,
+    href: "/admin/dashboard/services/first-sacrifice",
+  },
+  {
+    id: "notif3",
+    title: "Article published",
+    message: "Easter Celebrations Begin This Sunday is now live on the website.",
+    type: "success",
+    date: "2026-04-05T09:00:00",
+    read: false,
+    href: "/admin/dashboard/news",
+  },
+  {
+    id: "notif4",
+    title: "Draft article reminder",
+    message: "Restoration of Historic Church Completed is still in draft status.",
+    type: "warning",
+    date: "2026-04-04T16:45:00",
+    read: true,
+    href: "/admin/dashboard/news",
+  },
+  {
+    id: "notif5",
+    title: "New photo uploaded",
+    message: "Ehden Mountain Landscape was added to the Landscapes album.",
+    type: "info",
+    date: "2026-04-03T11:20:00",
+    read: true,
+    href: "/admin/dashboard/gallery",
+  },
+  {
+    id: "notif6",
+    title: "Contact form reply sent",
+    message: "Reply sent to Rita Obeid regarding donation inquiry.",
+    type: "success",
+    date: "2026-04-02T13:00:00",
+    read: true,
+    href: "/admin/dashboard/contact",
+  },
+]
+
+const defaultUserProfile: UserProfile = {
+  name: "Parish Administrator",
+  email: "admin@ehden-zgharta.org",
+  role: "Content Administrator",
+  avatar: "",
+  phone: "+961 6 660 230",
+  bio: "Managing content and communications for the Ehden-Zgharta parish website.",
+}
+
+const defaultUserPreferences: UserPreferences = {
+  emailNotifications: true,
+  pushNotifications: true,
+  publishImmediately: false,
+  showArabicFields: true,
+  weeklyDigest: true,
+}
+
 interface AdminStore {
   news: NewsItem[]
   photos: PhotoItem[]
@@ -598,6 +865,31 @@ interface AdminStore {
   updateServiceRequest: (id: string, item: Omit<ServiceRequest, "id">) => void
   updateServiceRequestStatus: (id: string, status: RequestStatus) => void
   deleteServiceRequest: (id: string) => void
+  channels: ChannelItem[]
+  addChannel: (item: Omit<ChannelItem, "id">) => void
+  updateChannel: (id: string, item: Omit<ChannelItem, "id">) => void
+  deleteChannel: (id: string) => void
+  contactInfo: ContactInfo
+  updateContactInfo: (info: ContactInfo) => void
+  contactSubmissions: ContactSubmission[]
+  addContactSubmission: (item: Omit<ContactSubmission, "id">) => void
+  updateContactSubmission: (
+    id: string,
+    item: Omit<ContactSubmission, "id">,
+  ) => void
+  updateContactSubmissionStatus: (
+    id: string,
+    status: ContactSubmissionStatus,
+  ) => void
+  deleteContactSubmission: (id: string) => void
+  notifications: NotificationItem[]
+  markNotificationRead: (id: string) => void
+  markAllNotificationsRead: () => void
+  deleteNotification: (id: string) => void
+  userProfile: UserProfile
+  updateUserProfile: (profile: UserProfile) => void
+  userPreferences: UserPreferences
+  updateUserPreferences: (prefs: UserPreferences) => void
 }
 
 const AdminDataContext = createContext<AdminStore | null>(null)
@@ -616,6 +908,16 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
   const [churches, setChurches] = useState<ChurchItem[]>(seedChurches)
   const [serviceRequests, setServiceRequests] =
     useState<ServiceRequest[]>(seedServiceRequests)
+  const [channels, setChannels] = useState<ChannelItem[]>(seedChannels)
+  const [contactInfo, setContactInfo] = useState<ContactInfo>(defaultContactInfo)
+  const [contactSubmissions, setContactSubmissions] =
+    useState<ContactSubmission[]>(seedContactSubmissions)
+  const [notifications, setNotifications] =
+    useState<NotificationItem[]>(seedNotifications)
+  const [userProfile, setUserProfile] =
+    useState<UserProfile>(defaultUserProfile)
+  const [userPreferences, setUserPreferences] =
+    useState<UserPreferences>(defaultUserPreferences)
 
   const addNews = useCallback(
     (item: Omit<NewsItem, "id">) =>
@@ -757,6 +1059,78 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const addChannel = useCallback(
+    (item: Omit<ChannelItem, "id">) =>
+      setChannels((prev) => [{ ...item, id: uid() }, ...prev]),
+    [],
+  )
+  const updateChannel = useCallback(
+    (id: string, item: Omit<ChannelItem, "id">) =>
+      setChannels((prev) =>
+        prev.map((c) => (c.id === id ? { ...item, id } : c)),
+      ),
+    [],
+  )
+  const deleteChannel = useCallback(
+    (id: string) => setChannels((prev) => prev.filter((c) => c.id !== id)),
+    [],
+  )
+
+  const updateContactInfo = useCallback(
+    (info: ContactInfo) => setContactInfo(info),
+    [],
+  )
+  const addContactSubmission = useCallback(
+    (item: Omit<ContactSubmission, "id">) =>
+      setContactSubmissions((prev) => [{ ...item, id: uid() }, ...prev]),
+    [],
+  )
+  const updateContactSubmission = useCallback(
+    (id: string, item: Omit<ContactSubmission, "id">) =>
+      setContactSubmissions((prev) =>
+        prev.map((s) => (s.id === id ? { ...item, id } : s)),
+      ),
+    [],
+  )
+  const updateContactSubmissionStatus = useCallback(
+    (id: string, status: ContactSubmissionStatus) =>
+      setContactSubmissions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status } : s)),
+      ),
+    [],
+  )
+  const deleteContactSubmission = useCallback(
+    (id: string) =>
+      setContactSubmissions((prev) => prev.filter((s) => s.id !== id)),
+    [],
+  )
+
+  const markNotificationRead = useCallback(
+    (id: string) =>
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      ),
+    [],
+  )
+  const markAllNotificationsRead = useCallback(
+    () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true }))),
+    [],
+  )
+  const deleteNotification = useCallback(
+    (id: string) =>
+      setNotifications((prev) => prev.filter((n) => n.id !== id)),
+    [],
+  )
+
+  const updateUserProfile = useCallback(
+    (profile: UserProfile) => setUserProfile(profile),
+    [],
+  )
+  const updateUserPreferences = useCallback(
+    (prefs: UserPreferences) => setUserPreferences(prefs),
+    [],
+  )
+
   return (
     <AdminDataContext.Provider
       value={{
@@ -793,6 +1167,25 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
         updateServiceRequest,
         updateServiceRequestStatus,
         deleteServiceRequest,
+        channels,
+        addChannel,
+        updateChannel,
+        deleteChannel,
+        contactInfo,
+        updateContactInfo,
+        contactSubmissions,
+        addContactSubmission,
+        updateContactSubmission,
+        updateContactSubmissionStatus,
+        deleteContactSubmission,
+        notifications,
+        markNotificationRead,
+        markAllNotificationsRead,
+        deleteNotification,
+        userProfile,
+        updateUserProfile,
+        userPreferences,
+        updateUserPreferences,
       }}
     >
       {children}
