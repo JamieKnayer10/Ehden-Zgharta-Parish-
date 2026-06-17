@@ -65,7 +65,11 @@ export default function ProfilePage() {
         description="View your administrator profile and access account settings."
         icon={User}
         action={
-          <Button asChild variant="outline" size="lg">
+          <Button
+            asChild
+            size="lg"
+            className="bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90"
+          >
             <Link href="/admin/dashboard/profile/settings">
               <Pencil className="h-4 w-4" />
               Edit Profile
