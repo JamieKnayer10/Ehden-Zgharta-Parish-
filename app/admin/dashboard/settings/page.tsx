@@ -1,7 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
-import { Globe, Mail, Phone, MapPin, Palette, Shield, Database, Bell } from "lucide-react"
+import { Globe, Mail, Phone, MapPin, Palette, Shield, Database, Bell, Settings } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { DashboardHero } from "@/components/admin/dashboard-hero"
 
 export default function SettingsPage() {
   function handleSave(e: React.FormEvent) {
@@ -23,15 +24,14 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex max-w-4xl flex-col gap-6">
-      <div>
-        <h1 className="font-serif text-2xl font-bold text-foreground">
-          Dashboard Settings
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          Manage website-wide configuration and preferences.
-        </p>
-      </div>
+    <div className="flex flex-col gap-8">
+      <DashboardHero
+        badge="Configuration"
+        title="Dashboard Settings"
+        titleAr="إعدادات لوحة التحكم"
+        description="Manage website-wide configuration and preferences."
+        icon={Settings}
+      />
 
       {/* General Site Settings */}
       <Card>
