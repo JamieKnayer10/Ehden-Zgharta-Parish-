@@ -38,28 +38,28 @@ const SEARCH_ITEMS = [
 const ROUTE_LABELS: Record<string, string> = {
   "/admin/dashboard": "Dashboard",
   "/admin/dashboard/about": "About Overview",
-  "/admin/dashboard/about/parish": "The Parish",
-  "/admin/dashboard/about/history": "History",
-  "/admin/dashboard/about/vicar": "The Vicar",
-  "/admin/dashboard/about/douaihy": "Blessed Patriarch Douaihy",
+  "/admin/dashboard/about/parish": "About > The Parish",
+  "/admin/dashboard/about/history": "About > History",
+  "/admin/dashboard/about/vicar": "About > The Vicar",
+  "/admin/dashboard/about/douaihy": "About > Blessed Patriarch Douaihy",
   "/admin/dashboard/mass-times": "Mass Times",
   "/admin/dashboard/yanabi3": "Yanabi3",
   "/admin/dashboard/news": "News & Articles",
-  "/admin/dashboard/gallery": "Photo Gallery",
-  "/admin/dashboard/videos": "Videos",
+  "/admin/dashboard/gallery": "Media > Photo Gallery",
+  "/admin/dashboard/videos": "Media > Videos",
   "/admin/dashboard/churches": "Churches",
   "/admin/dashboard/services": "Services",
-  "/admin/dashboard/services/first-sacrifice": "The First Sacrifice",
-  "/admin/dashboard/services/marriage-certificate": "Marriage Certificate",
-  "/admin/dashboard/services/confirmation-certificate": "Certificate of Confirmation",
-  "/admin/dashboard/services/death-certificate": "Death Certificate",
+  "/admin/dashboard/services/first-sacrifice": "Services > The First Sacrifice",
+  "/admin/dashboard/services/marriage-certificate": "Services > Marriage Certificate",
+  "/admin/dashboard/services/confirmation-certificate": "Services > Certificate of Confirmation",
+  "/admin/dashboard/services/death-certificate": "Services > Death Certificate",
   "/admin/dashboard/media": "Media Overview",
-  "/admin/dashboard/media/channels": "Channels",
+  "/admin/dashboard/media/channels": "Media > Channels",
   "/admin/dashboard/contact": "Contact Management",
   "/admin/dashboard/notifications": "Notifications",
   "/admin/dashboard/profile": "My Profile",
-  "/admin/dashboard/profile/settings": "Profile Settings",
-  "/admin/dashboard/profile/preferences": "Preferences",
+  "/admin/dashboard/profile/settings": "Profile > Profile Settings",
+  "/admin/dashboard/profile/preferences": "Profile > Preferences",
   "/admin/dashboard/settings": "Settings",
 }
 
@@ -93,23 +93,46 @@ function Breadcrumb() {
   }
 
   const pageLabel = ROUTE_LABELS[pathname] ?? "Page"
+  const parts = pageLabel.split(" > ")
+
+  // Build breadcrumb items
+  const breadcrumbItems = [
+    { label: "Dashboard", href: "/admin/dashboard" },
+    ...parts.map((part, index) => {
+      // Calculate the href for this level
+      const pathSegments = pathname.split("/").filter(Boolean)
+      const depth = index + 1 // Dashboard is depth 0, first part is depth 1
+      const href = "/" + pathSegments.slice(0, depth + 2).join("/") // +2 for admin/dashboard
+      const isLast = index === parts.length - 1
+      return { label: part, href, isLast }
+    })
+  ]
 
   return (
     <span className="flex items-center gap-1.5 font-serif text-base font-semibold">
-      <Link
-        href="/admin/dashboard"
-        className="text-muted-foreground hover:text-foreground transition-colors"
-      >
-        Dashboard
-      </Link>
-      <svg
-        className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
-      </svg>
-      <span className="text-foreground">{pageLabel}</span>
+      {breadcrumbItems.map((item, index) => (
+        <div key={index} className="flex items-center gap-1.5">
+          {index > 0 && (
+            <svg
+              className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m9 18 6-6-6-6" />
+            </svg>
+          )}
+          {item.isLast ? (
+            <span className="text-foreground">{item.label}</span>
+          ) : (
+            <Link
+              href={item.href}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {item.label}
+            </Link>
+          )}
+        </div>
+      ))}
     </span>
   )
 }

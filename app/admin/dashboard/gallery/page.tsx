@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import { toast } from "sonner"
-import { Plus, Pencil, Trash2, Search, Camera } from "lucide-react"
+import { Plus, Pencil, Trash2, Search, Camera, ArrowLeft, Upload, X, ImageIcon } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { DashboardHero } from "@/components/admin/dashboard-hero"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -56,6 +58,7 @@ const emptyForm: FormState = {
 
 export default function GalleryAdminPage() {
   const { photos, addPhoto, updatePhoto, deletePhoto } = useAdminData()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [search, setSearch] = useState("")
   const [albumFilter, setAlbumFilter] = useState("all")
   const [view, setView] = useState<ViewMode>("grid")
@@ -106,21 +109,44 @@ export default function GalleryAdminPage() {
     }
   }
 
+  function handleImageFile(file: File) {
+    // In a real app, you would upload this to a server/cloud storage
+    // For now, we'll create a temporary object URL
+    const objectUrl = URL.createObjectURL(file)
+    setForm({ ...form, image: objectUrl })
+  }
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-foreground">
-            Photo Gallery
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Upload and organize parish photos into albums.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          Add Photo
+    <div className="flex flex-col gap-8">
+      <div>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+        >
+          <Link href="/admin/dashboard/media">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Media
+          </Link>
         </Button>
+        <DashboardHero
+          badge="Media Management"
+          title="Photo Gallery"
+          titleAr="معرض الصور"
+          description="Upload and organize parish photos into albums."
+          icon={Camera}
+          action={
+            <Button
+              onClick={openCreate}
+              size="lg"
+              className="bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90"
+            >
+              <Plus className="h-4 w-4" />
+              Add Photo
+            </Button>
+          }
+        />
       </div>
 
       {/* Filters */}
@@ -166,24 +192,6 @@ export default function GalleryAdminPage() {
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      onClick={() => openEdit(item)}
-                      aria-label="Edit photo"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="destructive"
-                      onClick={() => setDeleteId(item.id)}
-                      aria-label="Delete photo"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
                 <CardContent className="p-3">
                   <p className="truncate text-sm font-medium text-foreground">
@@ -191,12 +199,33 @@ export default function GalleryAdminPage() {
                   </p>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between p-3 pt-0">
-                  <Badge variant="outline" className="text-xs">
-                    {item.album}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {item.date}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      {item.album}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {item.date}
+                    </span>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => openEdit(item)}
+                      aria-label="Edit photo"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setDeleteId(item.id)}
+                      aria-label="Delete photo"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             ))}
@@ -236,7 +265,7 @@ export default function GalleryAdminPage() {
                     onClick={() => openEdit(item)}
                     aria-label="Edit photo"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -245,7 +274,7 @@ export default function GalleryAdminPage() {
                     aria-label="Delete photo"
                     className="text-destructive hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
@@ -271,6 +300,31 @@ export default function GalleryAdminPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2">
+              <Label>Image</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload from Device
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleImageFile(file)
+                  }}
+                />
+              </div>
+            </div>
+
             {form.image && (
               <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
                 <Image
@@ -279,8 +333,36 @@ export default function GalleryAdminPage() {
                   fill
                   className="object-cover"
                 />
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, image: "" })}
+                  className="absolute right-2 top-2 rounded-full bg-background/80 p-1"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
             )}
+
+            {!form.image && (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              >
+                <ImageIcon className="h-8 w-8" />
+                <span className="text-sm">Click to upload image</span>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="image">Or paste Image URL</Label>
+              <Input
+                id="image"
+                value={form.image}
+                onChange={(e) => setForm({ ...form, image: e.target.value })}
+                placeholder="/images/..."
+              />
+            </div>
+
             <div className="flex flex-col gap-2">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -288,15 +370,6 @@ export default function GalleryAdminPage() {
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="Photo title"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="/images/..."
               />
             </div>
             <div className="grid grid-cols-2 gap-4">

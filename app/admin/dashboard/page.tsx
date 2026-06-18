@@ -3,6 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import {
+  LayoutDashboard,
   Newspaper,
   Camera,
   Video,
@@ -11,208 +12,265 @@ import {
   Plus,
   CheckCircle2,
   PencilLine,
+  ExternalLink,
 } from "lucide-react"
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { DashboardHero } from "@/components/admin/dashboard-hero"
 import { useAdminData } from "@/components/admin/admin-data"
 
 export default function DashboardOverviewPage() {
-  const { news, photos, videos, massChurches } = useAdminData()
+  const { news, photos, videos, massChurches, channels, serviceRequests } = useAdminData()
 
-  const published = news.filter((n) => n.status === "published").length
-  const drafts = news.filter((n) => n.status === "draft").length
+  const publishedNews = news.filter((n) => n.status === "published").length
+  const draftNews = news.filter((n) => n.status === "draft").length
+  const publishedVideos = videos.filter((v) => v.status === "published").length
+  const publishedChannels = channels.filter((c) => c.status === "published").length
+  const pendingRequests = serviceRequests.filter((r) => r.status === "pending").length
 
   const stats = [
     {
-      label: "Churches",
+      icon: LayoutDashboard,
       value: massChurches.length,
-      icon: Clock,
-      href: "/admin/dashboard/mass-times",
+      label: "Churches",
       hint: "Mass schedules",
     },
     {
-      label: "News Articles",
-      value: news.length,
       icon: Newspaper,
-      href: "/admin/dashboard/news",
-      hint: `${published} published · ${drafts} drafts`,
+      value: news.length,
+      label: "News Articles",
+      hint: `${publishedNews} published · ${draftNews} drafts`,
     },
     {
-      label: "Photos",
-      value: photos.length,
       icon: Camera,
-      href: "/admin/dashboard/gallery",
+      value: photos.length,
+      label: "Photos",
       hint: "Across all albums",
     },
     {
-      label: "Videos",
-      value: videos.length,
       icon: Video,
-      href: "/admin/dashboard/videos",
-      hint: "Liturgy, events & more",
+      value: videos.length,
+      label: "Videos",
+      hint: `${publishedVideos} published`,
     },
   ]
 
-  const recentNews = news.slice(0, 4)
+  const quickActions = [
+    {
+      label: "New Article",
+      href: "/admin/dashboard/news",
+      icon: Plus,
+    },
+    {
+      label: "Add Photo",
+      href: "/admin/dashboard/gallery",
+      icon: Camera,
+    },
+    {
+      label: "Add Video",
+      href: "/admin/dashboard/videos",
+      icon: Video,
+    },
+  ]
+
+  const dashboardSections = [
+    {
+      title: "Mass Times",
+      titleAr: "أوقات القداس",
+      href: "/admin/dashboard/mass-times",
+      icon: Clock,
+      count: massChurches.length,
+      hint: "Church schedules",
+      description: "Manage mass times across all churches in the parish.",
+    },
+    {
+      title: "News & Articles",
+      titleAr: "الأخبار والمقالات",
+      href: "/admin/dashboard/news",
+      icon: Newspaper,
+      count: news.length,
+      hint: `${publishedNews} published`,
+      description: "Create and publish parish news, announcements, and articles.",
+    },
+    {
+      title: "Photo Gallery",
+      titleAr: "معرض الصور",
+      href: "/admin/dashboard/gallery",
+      icon: Camera,
+      count: photos.length,
+      hint: "Organize albums",
+      description: "Upload and organize parish photos into themed albums.",
+    },
+    {
+      title: "Videos",
+      titleAr: "الفيديو",
+      href: "/admin/dashboard/videos",
+      icon: Video,
+      count: videos.length,
+      hint: `${publishedVideos} published`,
+      description: "Manage liturgy recordings, documentaries, and event videos.",
+    },
+  ]
+
+  const recentNews = news.slice(0, 3)
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Welcome */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-foreground text-balance">
-            Welcome back
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Manage your parish news, photos, and videos from one place.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <Link href="/admin/dashboard/gallery">
-              <Camera className="h-4 w-4" />
-              Add Photo
+      <DashboardHero
+        badge="Dashboard"
+        title="Overview"
+        titleAr="نظرة عامة"
+        description="Welcome to the parish administration dashboard. Manage content, media, and services from one central location."
+        icon={LayoutDashboard}
+        action={
+          <Button
+            asChild
+            size="lg"
+            className="bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90"
+          >
+            <Link href="/" target="_blank">
+              <ExternalLink className="h-4 w-4" />
+              View Website
             </Link>
           </Button>
-          <Button asChild>
-            <Link href="/admin/dashboard/news">
-              <Plus className="h-4 w-4" />
-              New Article
-            </Link>
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href}>
-            <Card className="group transition-all hover:shadow-md hover:-translate-y-0.5">
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <stat.icon className="h-6 w-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-2xl font-bold text-foreground">
-                    {stat.value}
-                  </p>
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {stat.label}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {stat.hint}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card key={stat.label} className="border-none shadow-md">
+            <CardContent className="flex items-center gap-4 p-6">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <stat.icon className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-sm font-medium text-foreground">{stat.label}</p>
+                <p className="text-xs text-muted-foreground">{stat.hint}</p>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Recent News */}
-        <Card className="min-w-0 lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <div>
-              <CardTitle className="font-serif">Recent Articles</CardTitle>
-              <CardDescription>Latest news content</CardDescription>
-            </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/admin/dashboard/news">
-                View all
-                <ArrowRight className="h-4 w-4" />
+      {/* Quick actions */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <h2 className="font-serif text-xl font-bold text-foreground">
+            Quick Actions
+          </h2>
+          <div className="mt-2 h-1 w-16 rounded-full bg-secondary" />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {quickActions.map((action) => (
+            <Button key={action.label} asChild variant="outline">
+              <Link href={action.href}>
+                <action.icon className="h-4 w-4" />
+                {action.label}
               </Link>
             </Button>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
+          ))}
+        </div>
+      </div>
+
+      {/* Dashboard sections */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {dashboardSections.map((section) => (
+          <Card
+            key={section.title}
+            className="group border-none shadow-lg transition-shadow hover:shadow-xl"
+          >
+            <Link href={section.href}>
+              <CardContent className="flex flex-col gap-4 p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                  <section.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-semibold text-foreground group-hover:text-primary">
+                    {section.title}
+                  </h3>
+                  <p className="text-sm text-secondary" dir="rtl">
+                    {section.titleAr}
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {section.description}
+                  </p>
+                </div>
+                <div className="mt-auto flex items-center justify-between border-t pt-4">
+                  <span className="text-sm text-muted-foreground">
+                    {section.count} items · {section.hint}
+                  </span>
+                  <span className="flex items-center gap-1 text-sm font-medium text-primary transition-all group-hover:gap-2">
+                    Manage
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </CardContent>
+            </Link>
+          </Card>
+        ))}
+      </div>
+
+      {/* Recent News */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-serif text-xl font-bold text-foreground">
+              Recent Articles
+            </h2>
+            <div className="mt-2 h-1 w-16 rounded-full bg-secondary" />
+          </div>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/admin/dashboard/news">
+              View all
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        {recentNews.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {recentNews.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 rounded-lg border p-3"
-              >
-                <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md">
+              <Card key={item.id} className="overflow-hidden border-none shadow-md">
+                <div className="relative h-32 bg-primary/10">
                   <Image
                     src={item.image || "/placeholder.svg"}
                     alt={item.title}
                     fill
-                    className="object-cover"
+                    className="object-cover opacity-60"
                   />
+                  <Badge
+                    variant={item.status === "published" ? "default" : "secondary"}
+                    className="absolute right-3 top-3"
+                  >
+                    {item.status}
+                  </Badge>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-foreground">
+                <CardContent className="p-4">
+                  <p className="line-clamp-2 font-medium text-foreground">
                     {item.title}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {item.category} · {item.date}
                   </p>
-                </div>
-                <Badge
-                  variant={item.status === "published" ? "default" : "secondary"}
-                  className="shrink-0 gap-1"
-                >
-                  {item.status === "published" ? (
-                    <CheckCircle2 className="h-3 w-3" />
-                  ) : (
-                    <PencilLine className="h-3 w-3" />
-                  )}
-                  {item.status}
-                </Badge>
-              </div>
+                </CardContent>
+              </Card>
             ))}
-            {recentNews.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                No articles yet.
+          </div>
+        ) : (
+          <Card className="border-none shadow-md">
+            <CardContent className="py-12 text-center">
+              <Newspaper className="mx-auto mb-3 h-12 w-12 text-muted-foreground/30" />
+              <p className="text-sm text-muted-foreground">
+                No articles yet. Create your first article to get started.
               </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-serif">Quick Actions</CardTitle>
-            <CardDescription>Jump straight to a task</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/mass-times">
-                <Clock className="h-4 w-4" />
-                Manage Mass Times
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/news">
-                <Newspaper className="h-4 w-4" />
-                Manage News
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/gallery">
-                <Camera className="h-4 w-4" />
-                Manage Gallery
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/dashboard/videos">
-                <Video className="h-4 w-4" />
-                Manage Videos
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/" target="_blank">
-                <ArrowRight className="h-4 w-4" />
-                Preview Website
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )

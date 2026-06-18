@@ -1,7 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { toast } from "sonner"
-import { Bell, Globe, Mail, Zap } from "lucide-react"
+import { Bell, Globe, Mail, Zap, ArrowLeft } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -70,6 +71,17 @@ export default function PreferencesPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+        >
+          <Link href="/admin/dashboard/profile">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Profile
+          </Link>
+        </Button>
         <h1 className="font-serif text-2xl font-bold text-foreground">
           Preferences
         </h1>

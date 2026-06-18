@@ -1,8 +1,9 @@
 "use client"
 
 import { useRef, useState } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
-import { User, Shield, Upload, X } from "lucide-react"
+import { User, Shield, Upload, X, ArrowLeft } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -69,6 +70,17 @@ export default function ProfileSettingsPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <div>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+        >
+          <Link href="/admin/dashboard/profile">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Profile
+          </Link>
+        </Button>
         <h1 className="font-serif text-2xl font-bold text-foreground">
           Profile Settings
         </h1>

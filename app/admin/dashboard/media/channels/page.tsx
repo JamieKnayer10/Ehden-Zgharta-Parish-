@@ -19,6 +19,7 @@ import {
   EyeOff,
   ImageIcon,
   X,
+  ArrowLeft,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -191,7 +192,19 @@ export default function ChannelsAdminPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <DashboardHero
+      <div>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+        >
+          <Link href="/admin/dashboard/media">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Media
+          </Link>
+        </Button>
+        <DashboardHero
         badge="Media Management"
         title="Channels"
         titleAr="القنوات"
@@ -208,6 +221,7 @@ export default function ChannelsAdminPage() {
           </Button>
         }
       />
+      </div>
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

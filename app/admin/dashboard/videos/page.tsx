@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import { toast } from "sonner"
-import { Plus, Pencil, Trash2, Search, Video, Play } from "lucide-react"
+import { Plus, Pencil, Trash2, Search, Video, Play, ArrowLeft, Upload, X, ImageIcon } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { DashboardHero } from "@/components/admin/dashboard-hero"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -55,16 +57,20 @@ const emptyForm: FormState = {
 
 export default function VideosAdminPage() {
   const { videos, addVideo, updateVideo, deleteVideo } = useAdminData()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [search, setSearch] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState("all")
   const [view, setView] = useState<ViewMode>("grid")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormState>(emptyForm)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const filtered = videos.filter((v) =>
-    v.title.toLowerCase().includes(search.toLowerCase()),
-  )
+  const filtered = videos.filter((v) => {
+    const matchesSearch = v.title.toLowerCase().includes(search.toLowerCase())
+    const matchesCategory = categoryFilter === "all" || v.category === categoryFilter
+    return matchesSearch && matchesCategory
+  })
 
   function openCreate() {
     setEditingId(null)
@@ -106,24 +112,48 @@ export default function VideosAdminPage() {
     }
   }
 
+  function handleThumbnailFile(file: File) {
+    // In a real app, you would upload this to a server/cloud storage
+    // For now, we'll create a temporary object URL
+    const objectUrl = URL.createObjectURL(file)
+    setForm({ ...form, thumbnail: objectUrl })
+  }
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-serif text-2xl font-bold text-foreground">
-            Videos
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Manage liturgical broadcasts, documentaries, and event recordings.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          Add Video
+    <div className="flex flex-col gap-8">
+      <div>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mb-2 -ml-2 text-muted-foreground"
+        >
+          <Link href="/admin/dashboard/media">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Media
+          </Link>
         </Button>
+        <DashboardHero
+          badge="Media Management"
+          title="Videos"
+          titleAr="الفيديو"
+          description="Manage liturgical broadcasts, documentaries, and event recordings."
+          icon={Video}
+          action={
+            <Button
+              onClick={openCreate}
+              size="lg"
+              className="bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90"
+            >
+              <Plus className="h-4 w-4" />
+              Add Video
+            </Button>
+          }
+        />
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* Filters */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -133,6 +163,22 @@ export default function VideosAdminPage() {
             className="pl-9"
           />
         </div>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {videoCategories.map((c) => (
+              <SelectItem key={c} value={c}>
+                {c}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-sm text-muted-foreground sm:ml-auto">
+          {filtered.length} video{filtered.length !== 1 ? "s" : ""}
+        </p>
         <ViewToggle view={view} onChange={setView} />
       </div>
 
@@ -178,7 +224,7 @@ export default function VideosAdminPage() {
                       onClick={() => openEdit(item)}
                       aria-label="Edit video"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -187,7 +233,7 @@ export default function VideosAdminPage() {
                       aria-label="Delete video"
                       className="text-destructive hover:text-destructive"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </CardFooter>
@@ -236,7 +282,7 @@ export default function VideosAdminPage() {
                     onClick={() => openEdit(item)}
                     aria-label="Edit video"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -245,7 +291,7 @@ export default function VideosAdminPage() {
                     aria-label="Delete video"
                     className="text-destructive hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
@@ -271,6 +317,31 @@ export default function VideosAdminPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-2">
+              <Label>Thumbnail Image</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload from Device
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleThumbnailFile(file)
+                  }}
+                />
+              </div>
+            </div>
+
             {form.thumbnail && (
               <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
                 <Image
@@ -279,17 +350,26 @@ export default function VideosAdminPage() {
                   fill
                   className="object-cover"
                 />
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, thumbnail: "" })}
+                  className="absolute right-2 top-2 rounded-full bg-background/80 p-1"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Video title"
-              />
-            </div>
+
+            {!form.thumbnail && (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              >
+                <ImageIcon className="h-8 w-8" />
+                <span className="text-sm">Click to upload thumbnail</span>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2">
               <Label htmlFor="url">Video URL</Label>
               <Input
@@ -299,8 +379,9 @@ export default function VideosAdminPage() {
                 placeholder="https://youtube.com/watch?v=..."
               />
             </div>
+
             <div className="flex flex-col gap-2">
-              <Label htmlFor="thumbnail">Thumbnail URL</Label>
+              <Label htmlFor="thumbnail">Or paste Thumbnail URL</Label>
               <Input
                 id="thumbnail"
                 value={form.thumbnail}
@@ -308,6 +389,16 @@ export default function VideosAdminPage() {
                   setForm({ ...form, thumbnail: e.target.value })
                 }
                 placeholder="/images/..."
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder="Video title"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
