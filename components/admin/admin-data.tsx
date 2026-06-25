@@ -897,240 +897,326 @@ const AdminDataContext = createContext<AdminStore | null>(null)
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 
-export function AdminDataProvider({ children }: { children: ReactNode }) {
-  const [news, setNews] = useState<NewsItem[]>(seedNews)
-  const [photos, setPhotos] = useState<PhotoItem[]>(seedPhotos)
-  const [videos, setVideos] = useState<VideoItem[]>(seedVideos)
-  const [massChurches, setMassChurches] =
-    useState<MassChurchItem[]>(seedMassChurches)
-  const [specialMasses, setSpecialMasses] =
-    useState<SpecialMassItem[]>(seedSpecialMasses)
-  const [yanabi3, setYanabi3] = useState<Yanabi3Item[]>(seedYanabi3)
-  const [churches, setChurches] = useState<ChurchItem[]>(seedChurches)
-  const [serviceRequests, setServiceRequests] =
-    useState<ServiceRequest[]>(seedServiceRequests)
-  const [channels, setChannels] = useState<ChannelItem[]>(seedChannels)
-  const [contactInfo, setContactInfo] = useState<ContactInfo>(defaultContactInfo)
-  const [contactSubmissions, setContactSubmissions] =
-    useState<ContactSubmission[]>(seedContactSubmissions)
-  const [notifications, setNotifications] =
-    useState<NotificationItem[]>(seedNotifications)
-  const [userProfile, setUserProfile] =
-    useState<UserProfile>(defaultUserProfile)
-  const [userPreferences, setUserPreferences] =
-    useState<UserPreferences>(defaultUserPreferences)
+// Shape of the data the server layout loads from the database and passes in.
+// Every field is optional so the provider can fall back to seed data when a
+// table happens to be empty.
+export interface AdminInitialData {
+  news?: NewsItem[]
+  photos?: PhotoItem[]
+  videos?: VideoItem[]
+  massChurches?: MassChurchItem[]
+  specialMasses?: SpecialMassItem[]
+  yanabi3?: Yanabi3Item[]
+  churches?: ChurchItem[]
+  serviceRequests?: ServiceRequest[]
+  channels?: ChannelItem[]
+  contactInfo?: ContactInfo
+  contactSubmissions?: ContactSubmission[]
+  notifications?: NotificationItem[]
+  userProfile?: UserProfile
+  userPreferences?: UserPreferences
+}
 
-  const addNews = useCallback(
-    (item: Omit<NewsItem, "id">) =>
-      setNews((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
+export function AdminDataProvider({
+  children,
+  initialData,
+}: {
+  children: ReactNode
+  initialData?: AdminInitialData
+}) {
+  const [news, setNews] = useState<NewsItem[]>(initialData?.news ?? seedNews)
+  const [photos, setPhotos] = useState<PhotoItem[]>(
+    initialData?.photos ?? seedPhotos,
   )
-  const updateNews = useCallback(
-    (id: string, item: Omit<NewsItem, "id">) =>
-      setNews((prev) => prev.map((n) => (n.id === id ? { ...item, id } : n))),
-    [],
+  const [videos, setVideos] = useState<VideoItem[]>(
+    initialData?.videos ?? seedVideos,
   )
-  const deleteNews = useCallback(
-    (id: string) => setNews((prev) => prev.filter((n) => n.id !== id)),
-    [],
+  const [massChurches, setMassChurches] = useState<MassChurchItem[]>(
+    initialData?.massChurches ?? seedMassChurches,
+  )
+  const [specialMasses, setSpecialMasses] = useState<SpecialMassItem[]>(
+    initialData?.specialMasses ?? seedSpecialMasses,
+  )
+  const [yanabi3, setYanabi3] = useState<Yanabi3Item[]>(
+    initialData?.yanabi3 ?? seedYanabi3,
+  )
+  const [churches, setChurches] = useState<ChurchItem[]>(
+    initialData?.churches ?? seedChurches,
+  )
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>(
+    initialData?.serviceRequests ?? seedServiceRequests,
+  )
+  const [channels, setChannels] = useState<ChannelItem[]>(
+    initialData?.channels ?? seedChannels,
+  )
+  const [contactInfo, setContactInfo] = useState<ContactInfo>(
+    initialData?.contactInfo ?? defaultContactInfo,
+  )
+  const [contactSubmissions, setContactSubmissions] = useState<
+    ContactSubmission[]
+  >(initialData?.contactSubmissions ?? seedContactSubmissions)
+  const [notifications, setNotifications] = useState<NotificationItem[]>(
+    initialData?.notifications ?? seedNotifications,
+  )
+  const [userProfile, setUserProfile] = useState<UserProfile>(
+    initialData?.userProfile ?? defaultUserProfile,
+  )
+  const [userPreferences, setUserPreferences] = useState<UserPreferences>(
+    initialData?.userPreferences ?? defaultUserPreferences,
   )
 
-  const addPhoto = useCallback(
-    (item: Omit<PhotoItem, "id">) =>
-      setPhotos((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
-  const updatePhoto = useCallback(
-    (id: string, item: Omit<PhotoItem, "id">) =>
-      setPhotos((prev) => prev.map((p) => (p.id === id ? { ...item, id } : p))),
-    [],
-  )
-  const deletePhoto = useCallback(
-    (id: string) => setPhotos((prev) => prev.filter((p) => p.id !== id)),
-    [],
-  )
+  // Swap an optimistic temp id for the real id returned by the server action.
+  const reconcileId =
+    <T extends { id: string }>(
+      setter: React.Dispatch<React.SetStateAction<T[]>>,
+    ) =>
+    (tempId: string) =>
+    (realId: string) =>
+      setter((prev) =>
+        prev.map((x) => (x.id === tempId ? { ...x, id: realId } : x)),
+      )
 
-  const addVideo = useCallback(
-    (item: Omit<VideoItem, "id">) =>
-      setVideos((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
-  const updateVideo = useCallback(
-    (id: string, item: Omit<VideoItem, "id">) =>
-      setVideos((prev) => prev.map((v) => (v.id === id ? { ...item, id } : v))),
-    [],
-  )
-  const deleteVideo = useCallback(
-    (id: string) => setVideos((prev) => prev.filter((v) => v.id !== id)),
-    [],
-  )
+  const addNews = useCallback((item: Omit<NewsItem, "id">) => {
+    const tempId = uid()
+    setNews((prev) => [{ ...item, id: tempId }, ...prev])
+    actions.createNews(item).then(reconcileId(setNews)(tempId)).catch(() => {})
+  }, [])
+  const updateNews = useCallback((id: string, item: Omit<NewsItem, "id">) => {
+    setNews((prev) => prev.map((n) => (n.id === id ? { ...item, id } : n)))
+    actions.updateNews(id, item).catch(() => {})
+  }, [])
+  const deleteNews = useCallback((id: string) => {
+    setNews((prev) => prev.filter((n) => n.id !== id))
+    actions.deleteNews(id).catch(() => {})
+  }, [])
 
-  const addMassChurch = useCallback(
-    (item: Omit<MassChurchItem, "id">) =>
-      setMassChurches((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
+  const addPhoto = useCallback((item: Omit<PhotoItem, "id">) => {
+    const tempId = uid()
+    setPhotos((prev) => [{ ...item, id: tempId }, ...prev])
+    actions.createPhoto(item).then(reconcileId(setPhotos)(tempId)).catch(() => {})
+  }, [])
+  const updatePhoto = useCallback((id: string, item: Omit<PhotoItem, "id">) => {
+    setPhotos((prev) => prev.map((p) => (p.id === id ? { ...item, id } : p)))
+    actions.updatePhoto(id, item).catch(() => {})
+  }, [])
+  const deletePhoto = useCallback((id: string) => {
+    setPhotos((prev) => prev.filter((p) => p.id !== id))
+    actions.deletePhoto(id).catch(() => {})
+  }, [])
+
+  const addVideo = useCallback((item: Omit<VideoItem, "id">) => {
+    const tempId = uid()
+    setVideos((prev) => [{ ...item, id: tempId }, ...prev])
+    actions.createVideo(item).then(reconcileId(setVideos)(tempId)).catch(() => {})
+  }, [])
+  const updateVideo = useCallback((id: string, item: Omit<VideoItem, "id">) => {
+    setVideos((prev) => prev.map((v) => (v.id === id ? { ...item, id } : v)))
+    actions.updateVideo(id, item).catch(() => {})
+  }, [])
+  const deleteVideo = useCallback((id: string) => {
+    setVideos((prev) => prev.filter((v) => v.id !== id))
+    actions.deleteVideo(id).catch(() => {})
+  }, [])
+
+  const addMassChurch = useCallback((item: Omit<MassChurchItem, "id">) => {
+    const tempId = uid()
+    setMassChurches((prev) => [{ ...item, id: tempId }, ...prev])
+    actions
+      .createMassChurch(item)
+      .then(reconcileId(setMassChurches)(tempId))
+      .catch(() => {})
+  }, [])
   const updateMassChurch = useCallback(
-    (id: string, item: Omit<MassChurchItem, "id">) =>
+    (id: string, item: Omit<MassChurchItem, "id">) => {
       setMassChurches((prev) =>
         prev.map((m) => (m.id === id ? { ...item, id } : m)),
-      ),
+      )
+      actions.updateMassChurch(id, item).catch(() => {})
+    },
     [],
   )
-  const deleteMassChurch = useCallback(
-    (id: string) =>
-      setMassChurches((prev) => prev.filter((m) => m.id !== id)),
-    [],
-  )
+  const deleteMassChurch = useCallback((id: string) => {
+    setMassChurches((prev) => prev.filter((m) => m.id !== id))
+    actions.deleteMassChurch(id).catch(() => {})
+  }, [])
 
-  const addSpecialMass = useCallback(
-    (item: Omit<SpecialMassItem, "id">) =>
-      setSpecialMasses((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
+  const addSpecialMass = useCallback((item: Omit<SpecialMassItem, "id">) => {
+    const tempId = uid()
+    setSpecialMasses((prev) => [{ ...item, id: tempId }, ...prev])
+    actions
+      .createSpecialMass(item)
+      .then(reconcileId(setSpecialMasses)(tempId))
+      .catch(() => {})
+  }, [])
   const updateSpecialMass = useCallback(
-    (id: string, item: Omit<SpecialMassItem, "id">) =>
+    (id: string, item: Omit<SpecialMassItem, "id">) => {
       setSpecialMasses((prev) =>
         prev.map((s) => (s.id === id ? { ...item, id } : s)),
-      ),
+      )
+      actions.updateSpecialMass(id, item).catch(() => {})
+    },
     [],
   )
-  const deleteSpecialMass = useCallback(
-    (id: string) =>
-      setSpecialMasses((prev) => prev.filter((s) => s.id !== id)),
-    [],
-  )
+  const deleteSpecialMass = useCallback((id: string) => {
+    setSpecialMasses((prev) => prev.filter((s) => s.id !== id))
+    actions.deleteSpecialMass(id).catch(() => {})
+  }, [])
 
-  const addYanabi3 = useCallback(
-    (item: Omit<Yanabi3Item, "id">) =>
-      setYanabi3((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
+  const addYanabi3 = useCallback((item: Omit<Yanabi3Item, "id">) => {
+    const tempId = uid()
+    setYanabi3((prev) => [{ ...item, id: tempId }, ...prev])
+    actions
+      .createYanabi3(item)
+      .then(reconcileId(setYanabi3)(tempId))
+      .catch(() => {})
+  }, [])
   const updateYanabi3 = useCallback(
-    (id: string, item: Omit<Yanabi3Item, "id">) =>
-      setYanabi3((prev) =>
-        prev.map((y) => (y.id === id ? { ...item, id } : y)),
-      ),
+    (id: string, item: Omit<Yanabi3Item, "id">) => {
+      setYanabi3((prev) => prev.map((y) => (y.id === id ? { ...item, id } : y)))
+      actions.updateYanabi3(id, item).catch(() => {})
+    },
     [],
   )
-  const deleteYanabi3 = useCallback(
-    (id: string) => setYanabi3((prev) => prev.filter((y) => y.id !== id)),
-    [],
-  )
+  const deleteYanabi3 = useCallback((id: string) => {
+    setYanabi3((prev) => prev.filter((y) => y.id !== id))
+    actions.deleteYanabi3(id).catch(() => {})
+  }, [])
 
-  const addChurch = useCallback(
-    (item: Omit<ChurchItem, "id">) =>
-      setChurches((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
+  const addChurch = useCallback((item: Omit<ChurchItem, "id">) => {
+    const tempId = uid()
+    setChurches((prev) => [{ ...item, id: tempId }, ...prev])
+    actions
+      .createChurch(item)
+      .then(reconcileId(setChurches)(tempId))
+      .catch(() => {})
+  }, [])
   const updateChurch = useCallback(
-    (id: string, item: Omit<ChurchItem, "id">) =>
-      setChurches((prev) =>
-        prev.map((c) => (c.id === id ? { ...item, id } : c)),
-      ),
+    (id: string, item: Omit<ChurchItem, "id">) => {
+      setChurches((prev) => prev.map((c) => (c.id === id ? { ...item, id } : c)))
+      actions.updateChurch(id, item).catch(() => {})
+    },
     [],
   )
-  const deleteChurch = useCallback(
-    (id: string) => setChurches((prev) => prev.filter((c) => c.id !== id)),
-    [],
-  )
+  const deleteChurch = useCallback((id: string) => {
+    setChurches((prev) => prev.filter((c) => c.id !== id))
+    actions.deleteChurch(id).catch(() => {})
+  }, [])
 
   const addServiceRequest = useCallback(
-    (item: Omit<ServiceRequest, "id">) =>
-      setServiceRequests((prev) => [{ ...item, id: uid() }, ...prev]),
+    (item: Omit<ServiceRequest, "id">) => {
+      const tempId = uid()
+      setServiceRequests((prev) => [{ ...item, id: tempId }, ...prev])
+      actions
+        .createServiceRequest(item)
+        .then(reconcileId(setServiceRequests)(tempId))
+        .catch(() => {})
+    },
     [],
   )
   const updateServiceRequest = useCallback(
-    (id: string, item: Omit<ServiceRequest, "id">) =>
+    (id: string, item: Omit<ServiceRequest, "id">) => {
       setServiceRequests((prev) =>
         prev.map((r) => (r.id === id ? { ...item, id } : r)),
-      ),
+      )
+      actions.updateServiceRequest(id, item).catch(() => {})
+    },
     [],
   )
   const updateServiceRequestStatus = useCallback(
-    (id: string, status: RequestStatus) =>
+    (id: string, status: RequestStatus) => {
       setServiceRequests((prev) =>
         prev.map((r) => (r.id === id ? { ...r, status } : r)),
-      ),
+      )
+      actions.updateServiceRequestStatus(id, status).catch(() => {})
+    },
     [],
   )
-  const deleteServiceRequest = useCallback(
-    (id: string) =>
-      setServiceRequests((prev) => prev.filter((r) => r.id !== id)),
-    [],
-  )
+  const deleteServiceRequest = useCallback((id: string) => {
+    setServiceRequests((prev) => prev.filter((r) => r.id !== id))
+    actions.deleteServiceRequest(id).catch(() => {})
+  }, [])
 
-  const addChannel = useCallback(
-    (item: Omit<ChannelItem, "id">) =>
-      setChannels((prev) => [{ ...item, id: uid() }, ...prev]),
-    [],
-  )
+  const addChannel = useCallback((item: Omit<ChannelItem, "id">) => {
+    const tempId = uid()
+    setChannels((prev) => [{ ...item, id: tempId }, ...prev])
+    actions
+      .createChannel(item)
+      .then(reconcileId(setChannels)(tempId))
+      .catch(() => {})
+  }, [])
   const updateChannel = useCallback(
-    (id: string, item: Omit<ChannelItem, "id">) =>
-      setChannels((prev) =>
-        prev.map((c) => (c.id === id ? { ...item, id } : c)),
-      ),
+    (id: string, item: Omit<ChannelItem, "id">) => {
+      setChannels((prev) => prev.map((c) => (c.id === id ? { ...item, id } : c)))
+      actions.updateChannel(id, item).catch(() => {})
+    },
     [],
   )
-  const deleteChannel = useCallback(
-    (id: string) => setChannels((prev) => prev.filter((c) => c.id !== id)),
-    [],
-  )
+  const deleteChannel = useCallback((id: string) => {
+    setChannels((prev) => prev.filter((c) => c.id !== id))
+    actions.deleteChannel(id).catch(() => {})
+  }, [])
 
-  const updateContactInfo = useCallback(
-    (info: ContactInfo) => setContactInfo(info),
-    [],
-  )
+  const updateContactInfo = useCallback((info: ContactInfo) => {
+    setContactInfo(info)
+    actions.updateContactInfo(info).catch(() => {})
+  }, [])
   const addContactSubmission = useCallback(
-    (item: Omit<ContactSubmission, "id">) =>
-      setContactSubmissions((prev) => [{ ...item, id: uid() }, ...prev]),
+    (item: Omit<ContactSubmission, "id">) => {
+      const tempId = uid()
+      setContactSubmissions((prev) => [{ ...item, id: tempId }, ...prev])
+      actions
+        .createContactSubmission(item)
+        .then(reconcileId(setContactSubmissions)(tempId))
+        .catch(() => {})
+    },
     [],
   )
   const updateContactSubmission = useCallback(
-    (id: string, item: Omit<ContactSubmission, "id">) =>
+    (id: string, item: Omit<ContactSubmission, "id">) => {
       setContactSubmissions((prev) =>
         prev.map((s) => (s.id === id ? { ...item, id } : s)),
-      ),
+      )
+      actions.updateContactSubmission(id, item).catch(() => {})
+    },
     [],
   )
   const updateContactSubmissionStatus = useCallback(
-    (id: string, status: ContactSubmissionStatus) =>
+    (id: string, status: ContactSubmissionStatus) => {
       setContactSubmissions((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status } : s)),
-      ),
+      )
+      actions.updateContactSubmissionStatus(id, status).catch(() => {})
+    },
     [],
   )
-  const deleteContactSubmission = useCallback(
-    (id: string) =>
-      setContactSubmissions((prev) => prev.filter((s) => s.id !== id)),
-    [],
-  )
+  const deleteContactSubmission = useCallback((id: string) => {
+    setContactSubmissions((prev) => prev.filter((s) => s.id !== id))
+    actions.deleteContactSubmission(id).catch(() => {})
+  }, [])
 
-  const markNotificationRead = useCallback(
-    (id: string) =>
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-      ),
-    [],
-  )
-  const markAllNotificationsRead = useCallback(
-    () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true }))),
-    [],
-  )
-  const deleteNotification = useCallback(
-    (id: string) =>
-      setNotifications((prev) => prev.filter((n) => n.id !== id)),
-    [],
-  )
+  const markNotificationRead = useCallback((id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    )
+    actions.markNotificationRead(id).catch(() => {})
+  }, [])
+  const markAllNotificationsRead = useCallback(() => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+    actions.markAllNotificationsRead().catch(() => {})
+  }, [])
+  const deleteNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id))
+    actions.deleteNotification(id).catch(() => {})
+  }, [])
 
-  const updateUserProfile = useCallback(
-    (profile: UserProfile) => setUserProfile(profile),
-    [],
-  )
-  const updateUserPreferences = useCallback(
-    (prefs: UserPreferences) => setUserPreferences(prefs),
-    [],
-  )
+  const updateUserProfile = useCallback((profile: UserProfile) => {
+    setUserProfile(profile)
+    actions.updateUserProfile(profile).catch(() => {})
+  }, [])
+  const updateUserPreferences = useCallback((prefs: UserPreferences) => {
+    setUserPreferences(prefs)
+    actions.updateUserPreferences(prefs).catch(() => {})
+  }, [])
 
   return (
     <AdminDataContext.Provider
