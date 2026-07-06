@@ -1,4 +1,6 @@
 import { betterAuth } from "better-auth"
+import { admin } from "better-auth/plugins"
+import { randomUUID } from "crypto"
 import { pool } from "@/lib/db"
 
 const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -26,15 +28,23 @@ export const auth = betterAuth({
   database: pool,
   emailAndPassword: {
     enabled: true,
+    // Only an authenticated admin can create accounts (via the dashboard).
+    // Public self sign-up is disabled.
+    disableSignUp: true,
   },
-  ...(process.env.NODE_ENV === "development"
-    ? {
-        advanced: {
+  plugins: [admin()],
+  advanced: {
+    // The neon_auth.user.id column is a UUID, so ids must be valid UUIDs.
+    database: {
+      generateId: () => randomUUID(),
+    },
+    ...(process.env.NODE_ENV === "development"
+      ? {
           defaultCookieAttributes: {
             sameSite: "none" as const,
             secure: true,
           },
-        },
-      }
-    : {}),
+        }
+      : {}),
+  },
 })

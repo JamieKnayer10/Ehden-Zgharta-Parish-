@@ -157,20 +157,7 @@ export function LoginForm() {
           </Button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => {
-            setError(null)
-            setMode((m) => (m === "sign-in" ? "sign-up" : "sign-in"))
-          }}
-          className="mt-5 w-full text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {mode === "sign-in"
-            ? "First time? Create an administrator account"
-            : "Already have an account? Sign in"}
-        </button>
-
-        <p className="mt-4 text-center text-xs text-muted-foreground text-pretty">
+        <p className="mt-5 text-center text-xs text-muted-foreground text-pretty">
           Authorized parish administrators only. Access is monitored and
           restricted.
         </p>
