@@ -14,20 +14,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { signIn, signUp } from "@/lib/auth-client"
 
 export function LoginForm() {
   const router = useRouter()
+  const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in")
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Auth will be wired up later. For now this navigates to the dashboard.
+    setError(null)
     setIsSubmitting(true)
-    setTimeout(() => {
-      setIsSubmitting(false)
-      router.push("/admin/dashboard")
-    }, 900)
+
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get("email") ?? "")
+    const password = String(formData.get("password") ?? "")
+    const name = String(formData.get("name") ?? "") || email.split("@")[0]
+
+    const { error } =
+      mode === "sign-up"
+        ? await signUp.email({ email, password, name })
+        : await signIn.email({ email, password })
+
+    setIsSubmitting(false)
+
+    if (error) {
+      setError(error.message ?? "Something went wrong. Please try again.")
+      return
+    }
+
+    router.push("/admin/dashboard")
+    router.refresh()
   }
 
   return (
@@ -47,12 +66,27 @@ export function LoginForm() {
           Admin Portal
         </CardTitle>
         <CardDescription className="text-pretty">
-          Sign in to manage news, photos, videos, and parish content.
+          {mode === "sign-up"
+            ? "Create the first administrator account to manage parish content."
+            : "Sign in to manage news, photos, videos, and parish content."}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {mode === "sign-up" && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                placeholder="Parish Administrator"
+              />
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -68,21 +102,18 @@ export function LoginForm() {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <button
-                type="button"
-                className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Forgot password?
-              </button>
             </div>
             <div className="relative">
               <Input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
+                autoComplete={
+                  mode === "sign-up" ? "new-password" : "current-password"
+                }
                 placeholder="Enter your password"
                 className="pr-10"
+                minLength={8}
                 required
               />
               <button
@@ -100,6 +131,12 @@ export function LoginForm() {
             </div>
           </div>
 
+          {error && (
+            <p className="text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
+
           <Button
             type="submit"
             size="lg"
@@ -109,18 +146,31 @@ export function LoginForm() {
             {isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Signing in...
+                {mode === "sign-up" ? "Creating account..." : "Signing in..."}
               </>
             ) : (
               <>
                 <Lock className="h-4 w-4" />
-                Sign In
+                {mode === "sign-up" ? "Create Account" : "Sign In"}
               </>
             )}
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground text-pretty">
+        <button
+          type="button"
+          onClick={() => {
+            setError(null)
+            setMode((m) => (m === "sign-in" ? "sign-up" : "sign-in"))
+          }}
+          className="mt-5 w-full text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {mode === "sign-in"
+            ? "First time? Create an administrator account"
+            : "Already have an account? Sign in"}
+        </button>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground text-pretty">
           Authorized parish administrators only. Access is monitored and
           restricted.
         </p>
